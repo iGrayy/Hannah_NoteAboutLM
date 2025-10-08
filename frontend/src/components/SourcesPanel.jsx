@@ -9,7 +9,8 @@ const SourcesPanel = ({
   onDeleteSource,
   onAddSource,
   searchQuery,
-  onSearchChange
+  onSearchChange,
+  onTogglePanel
 }) => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -65,9 +66,18 @@ const SourcesPanel = ({
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-white">Nguồn</h2>
-          <button className="text-gray-400 hover:text-white">
-            <ChevronDown className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button className="text-gray-400 hover:text-white">
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            <button onClick={onTogglePanel} className="text-gray-400 hover:text-white">
+              {/* simple X icon using SVG to avoid new imports */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Action Buttons */}

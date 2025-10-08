@@ -29,6 +29,11 @@ import {
 import SourcesPanel from './components/SourcesPanel';
 import ConversationPanel from './components/ConversationPanel';
 import StudioPanel from './components/StudioPanel';
+import ResourceHubPanel from './components/ResourceHubPanel';
+import CareerPathExplorer from './components/CareerPathExplorer';
+import MindmapPanel from './components/MindmapPanel';
+import ProgressDashboard from './components/ProgressDashboard';
+import AIArtifactPanel from './components/AIArtifactPanel';
 import APIStatus from './components/APIStatus';
 import SetupGuide from './components/SetupGuide';
 
@@ -37,8 +42,10 @@ function App() {
   const [conversations, setConversations] = useState([]);
   const [activeSourceId, setActiveSourceId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSourcesOpen, setIsSourcesOpen] = useState(true);
   const [isStudioOpen, setIsStudioOpen] = useState(true);
   const [showSetupGuide, setShowSetupGuide] = useState(false);
+  const [activeRightTab, setActiveRightTab] = useState('studio'); // studio | resources | career | mindmap | artifacts | progress
 
   // Load sources from localStorage on mount
   useEffect(() => {
@@ -136,34 +143,94 @@ function App() {
       {/* Main Content */}
       <div className="flex-1 flex">
         {/* Left Panel - Sources */}
-        <motion.div
-          initial={{ x: -300 }}
-          animate={{ x: 0 }}
-          className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col"
-        >
-          <SourcesPanel
-            sources={filteredSources}
-            activeSourceId={activeSourceId}
-            onSelectSource={setActiveSourceId}
-            onDeleteSource={deleteSource}
-            onAddSource={addSource}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
-        </motion.div>
+        <AnimatePresence>
+          {isSourcesOpen ? (
+            <motion.div
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col"
+            >
+              <SourcesPanel
+                sources={filteredSources}
+                activeSourceId={activeSourceId}
+                onSelectSource={setActiveSourceId}
+                onDeleteSource={deleteSource}
+                onAddSource={addSource}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                onTogglePanel={() => setIsSourcesOpen(false)}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ x: -80, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -80, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-16 bg-gray-800 border-r border-gray-700 flex flex-col items-center py-3 gap-4"
+            >
+              <button
+                onClick={() => setIsSourcesOpen(true)}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-white"
+                title="Mở Nguồn"
+              >
+                <ChevronDown className="w-4 h-4 rotate-90" />
+              </button>
+              <button
+                onClick={() => addSource({ title: 'Nguồn mới', content: '', type: 'text' })}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
+                title="Thêm nguồn"
+              >
+                <Plus className="w-4 h-4 text-white" />
+              </button>
+              <label
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center cursor-pointer"
+                title="Tải lên"
+              >
+                <Upload className="w-4 h-4 text-white" />
+                <input type="file" className="hidden" onChange={(e) => {
+                  const file = e.target.files && e.target.files[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    addSource({ title: file.name, content: ev.target.result || '', type: file.type.includes('image') ? 'image' : 'file' });
+                  };
+                  reader.readAsText(file);
+                }} />
+              </label>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Center Panel - Conversation */}
         <div className="flex-1 flex flex-col bg-gray-900">
-          <ConversationPanel
-            source={activeSource}
-            conversations={conversations}
-            onUpdateConversations={setConversations}
-          />
+          <div className="p-3 border-b border-gray-700">
+            <div className="flex items-center gap-2 text-xs">
+              {['studio', 'resources', 'career', 'mindmap', 'artifacts', 'progress'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveRightTab(tab)}
+                  className={`px-3 py-1 rounded ${activeRightTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 border border-gray-700'}`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col">
+            <ConversationPanel
+              source={activeSource}
+              conversations={conversations}
+              onUpdateConversations={setConversations}
+            />
+          </div>
         </div>
 
         {/* Right Panel - Studio */}
         <AnimatePresence>
-          {isStudioOpen && (
+          {isStudioOpen ? (
             <motion.div
               initial={{ x: 400 }}
               animate={{ x: 0 }}
@@ -171,25 +238,91 @@ function App() {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="w-96 bg-gray-800 border-l border-gray-700 flex flex-col"
             >
-              <StudioPanel
-                source={activeSource}
-                onTogglePanel={() => setIsStudioOpen(false)}
-              />
+              {activeRightTab === 'studio' && (
+                <StudioPanel
+                  source={activeSource}
+                  onTogglePanel={() => setIsStudioOpen(false)}
+                />
+              )}
+              {activeRightTab === 'resources' && (
+                <ResourceHubPanel topic={activeSource?.title || 'Software Engineering'} />
+              )}
+              {activeRightTab === 'career' && (
+                <CareerPathExplorer />
+              )}
+              {activeRightTab === 'mindmap' && (
+                <MindmapPanel />
+              )}
+              {activeRightTab === 'artifacts' && (
+                <AIArtifactPanel />
+              )}
+              {activeRightTab === 'progress' && (
+                <ProgressDashboard />
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ x: 80, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 80, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-16 bg-gray-800 border-l border-gray-700 flex flex-col items-center py-3 gap-4"
+            >
+              <button
+                onClick={() => setIsStudioOpen(true)}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-white"
+                title="Mở Studio"
+              >
+                <ChevronDown className="w-4 h-4 -rotate-90" />
+              </button>
+              <button
+                onClick={() => setIsStudioOpen(true)}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
+                title="Tổng quan âm thanh"
+              >
+                <Brain className="w-4 h-4 text-white" />
+              </button>
+              <button
+                onClick={() => setIsStudioOpen(true)}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
+                title="Tổng quan video"
+              >
+                <Video className="w-4 h-4 text-white" />
+              </button>
+              <button
+                onClick={() => setIsStudioOpen(true)}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
+                title="Bản đồ tư duy"
+              >
+                <Map className="w-4 h-4 text-white" />
+              </button>
+              <button
+                onClick={() => setIsStudioOpen(true)}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
+                title="Báo cáo"
+              >
+                <Report className="w-4 h-4 text-white" />
+              </button>
+              <button
+                onClick={() => setIsStudioOpen(true)}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
+                title="Thẻ ghi nhớ"
+              >
+                <Star className="w-4 h-4 text-white" />
+              </button>
+              <button
+                onClick={() => setIsStudioOpen(true)}
+                className="w-10 h-10 rounded-xl bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
+                title="Bài kiểm tra"
+              >
+                <HelpCircle className="w-4 h-4 text-white" />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Studio Toggle Button */}
-        {!isStudioOpen && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            onClick={() => setIsStudioOpen(true)}
-            className="fixed right-4 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors duration-200"
-          >
-            <Bot className="w-5 h-5" />
-          </motion.button>
-        )}
+        {/* Studio compact rail replaces floating toggle when collapsed */}
+        {/* Sources compact rail replaces floating toggle when collapsed */}
       </div>
 
       {/* Footer */}

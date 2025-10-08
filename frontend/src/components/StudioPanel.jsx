@@ -13,9 +13,17 @@ import {
   CheckCircle
 } from 'lucide-react';
 
+const AGENTS = [
+  { id: 'explainer', label: '🧑‍🏫 Concept Explainer', style: 'Giải thích rõ ràng, ví dụ ngắn gọn, từng bước.' },
+  { id: 'career', label: '💼 Career Advisor', style: 'Đưa gợi ý lộ trình nghề nghiệp, kỹ năng cần học.' },
+  { id: 'reviewer', label: '💻 Code Reviewer', style: 'Phản biện code ngắn gọn, nêu vấn đề và đề xuất cải tiến.' },
+  { id: 'recommender', label: '📚 Resource Recommender', style: 'Đề xuất tài nguyên học tập phù hợp trình độ.' },
+];
+
 const StudioPanel = ({ source, onTogglePanel }) => {
   const [studioOutputs, setStudioOutputs] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [activeAgentId, setActiveAgentId] = useState('explainer');
 
   const studioTools = [
     {
@@ -64,30 +72,31 @@ const StudioPanel = ({ source, onTogglePanel }) => {
 
     setIsGenerating(true);
     const tool = studioTools.find(t => t.id === toolId);
+    const agent = AGENTS.find(a => a.id === activeAgentId);
 
     let prompt = '';
 
     switch (toolId) {
       case 'audio-overview':
-        prompt = `Tạo một bản tóm tắt âm thanh chi tiết cho nội dung sau. Hãy viết như một script podcast ngắn gọn, dễ hiểu:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
+        prompt = `Bạn là ${agent.label}. Phong cách: ${agent.style}\n\nTạo một bản tóm tắt âm thanh chi tiết như script podcast ngắn gọn, dễ hiểu:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
         break;
       case 'video-overview':
-        prompt = `Tạo kịch bản video tóm tắt cho nội dung sau. Bao gồm phần giới thiệu, nội dung chính và kết luận:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
+        prompt = `Bạn là ${agent.label}. Phong cách: ${agent.style}\n\nTạo kịch bản video tóm tắt (mở đầu, nội dung chính, kết luận):\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
         break;
       case 'mind-map':
-        prompt = `Tạo sơ đồ tư duy dạng text cho nội dung sau. Sử dụng cấu trúc phân cấp với các nhánh chính và phụ:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
+        prompt = `Bạn là ${agent.label}. Phong cách: ${agent.style}\n\nTạo sơ đồ tư duy dạng text theo phân cấp (nhánh chính/phụ):\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
         break;
       case 'report':
-        prompt = `Tạo báo cáo chi tiết và chuyên nghiệp cho nội dung sau. Bao gồm tóm tắt, phân tích và kết luận:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
+        prompt = `Bạn là ${agent.label}. Phong cách: ${agent.style}\n\nTạo báo cáo chi tiết, bao gồm tóm tắt, phân tích, kết luận:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
         break;
       case 'flashcards':
-        prompt = `Tạo bộ thẻ học tập (flashcards) dựa trên nội dung sau. Mỗi thẻ có câu hỏi và đáp án rõ ràng:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
+        prompt = `Bạn là ${agent.label}. Phong cách: ${agent.style}\n\nTạo bộ flashcards, mỗi thẻ gồm câu hỏi và đáp án ngắn:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
         break;
       case 'quiz':
-        prompt = `Tạo bài kiểm tra trắc nghiệm dựa trên nội dung sau. Bao gồm 5-10 câu hỏi với 4 đáp án cho mỗi câu:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
+        prompt = `Bạn là ${agent.label}. Phong cách: ${agent.style}\n\nTạo bài kiểm tra trắc nghiệm (5-10 câu, 4 đáp án/câu):\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
         break;
       default:
-        prompt = `Tạo ${tool.title.toLowerCase()} cho nguồn sau:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
+        prompt = `Bạn là ${agent.label}. Phong cách: ${agent.style}\n\nTạo ${tool.title.toLowerCase()} cho nguồn sau:\n\nTiêu đề: ${source.title}\nNội dung: ${source.content}`;
     }
 
     try {
@@ -127,7 +136,38 @@ const StudioPanel = ({ source, onTogglePanel }) => {
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">Studio</h2>
+          <div>
+            <h2 className="text-lg font-semibold text-white">Studio</h2>
+            {/* Agents as cards styled like studio tiles */}
+            <div className="mt-3">
+              <div className="text-xs text-gray-400 mb-2">AI Agents</div>
+              <div className="grid grid-cols-2 gap-3">
+                {AGENTS.map((a, index) => (
+                  <motion.div
+                    key={a.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => setActiveAgentId(a.id)}
+                    className={`studio-card ${activeAgentId === a.id ? 'ring-2 ring-blue-500 border-blue-500' : ''}`}
+                    title={a.label}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="text-lg">{a.label.split(' ')[0]}</div>
+                        <div>
+                          <h3 className="text-sm font-medium text-white">{a.label}</h3>
+                        </div>
+                      </div>
+                      {activeAgentId === a.id && (
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
           <button
             onClick={onTogglePanel}
             className="text-gray-400 hover:text-white"
