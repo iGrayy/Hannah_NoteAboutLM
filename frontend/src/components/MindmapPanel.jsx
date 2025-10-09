@@ -2,12 +2,12 @@ import React from 'react';
 import { Sparkles } from 'lucide-react';
 
 const nodes = [
-  { id: 'root', label: 'Software Engineering' },
-  { id: 'req', label: 'Requirements' },
-  { id: 'design', label: 'Design' },
-  { id: 'impl', label: 'Implementation' },
-  { id: 'test', label: 'Testing' },
-  { id: 'deploy', label: 'Deployment' },
+  { id: 'root', label: 'Kỹ thuật phần mềm' },
+  { id: 'req', label: 'Yêu cầu' },
+  { id: 'design', label: 'Thiết kế' },
+  { id: 'impl', label: 'Triển khai' },
+  { id: 'test', label: 'Kiểm thử' },
+  { id: 'deploy', label: 'Triển khai' },
 ];
 
 const MindmapPanel = () => {
@@ -15,8 +15,8 @@ const MindmapPanel = () => {
     <div className="h-full flex flex-col">
       <div className="p-3 border-b border-gray-700 flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-white">Mindmap & Concept View</h3>
-          <p className="text-xs text-gray-400">Auto-generated concept graph (mock)</p>
+          <h3 className="text-sm font-semibold text-white">Bản đồ tư duy & Khái niệm</h3>
+          <p className="text-xs text-gray-400">Biểu đồ khái niệm tự động tạo (mô phỏng)</p>
         </div>
         <Sparkles className="w-4 h-4 text-blue-400" />
       </div>

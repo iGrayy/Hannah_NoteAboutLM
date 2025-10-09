@@ -47,7 +47,7 @@ const SetupGuide = ({ isOpen, onClose }) => {
                                     Hannah AI Studio <ExternalLink className="w-3 h-3" />
                                 </a></li>
                                 <li>Đăng nhập bằng tài khoản Google của bạn</li>
-                                <li>Nhấp vào "Create API Key"</li>
+                                <li>Nhấp vào "Tạo API Key"</li>
                                 <li>Sao chép API key được tạo</li>
                             </ol>
                         </div>

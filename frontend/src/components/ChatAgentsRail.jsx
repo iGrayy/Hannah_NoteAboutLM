@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 
 const agents = [
-    { id: 'explainer', label: 'Concept Explainer', emoji: '🧑‍🏫' },
-    { id: 'career', label: 'Career Advisor', emoji: '💼' },
-    { id: 'reviewer', label: 'Code Reviewer', emoji: '💻' },
-    { id: 'recommender', label: 'Resource Recommender', emoji: '📚' },
+    { id: 'explainer', label: 'Giải thích khái niệm', emoji: '🧑‍🏫' },
+    { id: 'career', label: 'Tư vấn nghề nghiệp', emoji: '💼' },
+    { id: 'reviewer', label: 'Đánh giá mã nguồn', emoji: '💻' },
+    { id: 'recommender', label: 'Gợi ý tài nguyên', emoji: '📚' },
 ];
 
 const ChatAgentsRail = ({ activeAgentId, onChange }) => {

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Code2, Layers, FileText, Sparkles } from 'lucide-react';
 
 const tabs = [
-    { id: 'code', label: 'Code Preview', icon: Code2 },
-    { id: 'uml', label: 'UML Diagram', icon: Layers },
-    { id: 'quiz', label: 'Quiz', icon: FileText },
+    { id: 'code', label: 'Xem trước mã', icon: Code2 },
+    { id: 'uml', label: 'Biểu đồ UML', icon: Layers },
+    { id: 'quiz', label: 'Bài kiểm tra', icon: FileText },
 ];
 
 const AIArtifactPanel = () => {
@@ -15,7 +15,7 @@ const AIArtifactPanel = () => {
             <div className="p-3 border-b border-gray-700 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-blue-400" />
-                    <h3 className="text-sm font-semibold text-white">AI Artifacts</h3>
+                    <h3 className="text-sm font-semibold text-white">Sản phẩm AI</h3>
                 </div>
                 <div className="flex gap-1">
                     {tabs.map((t) => (
@@ -43,7 +43,7 @@ const AIArtifactPanel = () => {
 
                 {active === 'uml' && (
                     <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
-                        <div className="text-xs text-gray-300">[UML Diagram Placeholder]</div>
+                        <div className="text-xs text-gray-300">[Vị trí biểu đồ UML]</div>
                         <svg viewBox="0 0 300 150" className="w-full h-40 mt-2">
                             <rect x="20" y="20" width="80" height="40" fill="#1F2937" stroke="#374151" />
                             <rect x="200" y="20" width="80" height="40" fill="#1F2937" stroke="#374151" />
@@ -58,7 +58,7 @@ const AIArtifactPanel = () => {
                     <div className="space-y-2">
                         {[1, 2, 3].map((q) => (
                             <div key={q} className="bg-gray-800 border border-gray-700 rounded-lg p-3">
-                                <div className="text-sm text-white mb-2">Question {q}: What is Big-O of binary search?</div>
+                                <div className="text-sm text-white mb-2">Câu hỏi {q}: Big-O của tìm kiếm nhị phân là gì?</div>
                                 <div className="grid grid-cols-2 gap-2 text-xs">
                                     {['O(1)', 'O(log n)', 'O(n)', 'O(n log n)'].map((a) => (
                                         <button key={a} className="bg-gray-700 hover:bg-gray-600 text-white rounded px-2 py-1 text-left">{a}</button>

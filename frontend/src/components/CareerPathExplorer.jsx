@@ -22,8 +22,8 @@ const CareerPathExplorer = () => {
     <div className="h-full flex flex-col">
       <div className="p-3 border-b border-gray-700 flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-white">Career Path Explorer</h3>
-          <p className="text-xs text-gray-400">Choose a specialization roadmap</p>
+          <h3 className="text-sm font-semibold text-white">Khám phá lộ trình nghề nghiệp</h3>
+          <p className="text-xs text-gray-400">Chọn lộ trình chuyên môn</p>
         </div>
         <Map className="w-4 h-4 text-blue-400" />
       </div>
@@ -36,13 +36,13 @@ const CareerPathExplorer = () => {
               <h4 className={`text-white text-sm font-medium`}>{b.label}</h4>
             </div>
             <div className="grid grid-cols-3 gap-2 items-center">
-              <Node title="Foundations" subtitle="CS basics, Git, Linux" />
+              <Node title="Nền tảng" subtitle="CS cơ bản, Git, Linux" />
               <ChevronRight className="w-4 h-4 text-gray-500 justify-self-center" />
-              <Node title="Core Skills" subtitle="Frameworks & tooling" />
+              <Node title="Kỹ năng cốt lõi" subtitle="Framework & công cụ" />
               <ChevronRight className="w-4 h-4 text-gray-500 justify-self-center" />
-              <Node title="Projects" subtitle="Build 2-3 apps" />
+              <Node title="Dự án" subtitle="Xây dựng 2-3 ứng dụng" />
               <ChevronRight className="w-4 h-4 text-gray-500 justify-self-center" />
-              <Node title="Advanced" subtitle="Scale & patterns" />
+              <Node title="Nâng cao" subtitle="Mở rộng & mẫu thiết kế" />
             </div>
           </div>
         ))}

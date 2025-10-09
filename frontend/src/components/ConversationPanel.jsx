@@ -434,19 +434,19 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations, searc
                                                                 onClick={() => handleOptionClick(message.richContent.options.simply)}
                                                                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors font-medium"
                                                             >
-                                                                Simply
+                                                                Đơn giản
                                                             </button>
                                                             <button
                                                                 onClick={() => handleOptionClick(message.richContent.options.goDeeper)}
                                                                 className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors font-medium"
                                                             >
-                                                                Go deeper
+                                                                Tìm hiểu sâu hơn
                                                             </button>
                                                             <button
                                                                 onClick={() => handleOptionClick(message.richContent.options.getImages)}
                                                                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors font-medium"
                                                             >
-                                                                Get images
+                                                                Lấy hình ảnh
                                                             </button>
                                                         </div>
                                                     </div>

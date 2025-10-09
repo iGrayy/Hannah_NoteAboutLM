@@ -34,59 +34,59 @@ const HomePage = ({ onNavigateToMain, onStartBlankConversation }) => {
     const learningCards = [
         {
             id: 1,
-            category: 'Earth Science',
+            category: 'Khoa học Trái đất',
             categoryColor: 'text-red-500',
             categoryIcon: Mountain,
-            title: 'How do volcanoes form, and what causes them to erupt?',
-            description: 'Journey to the Earth\'s interior to understand the processes that lead to volcanic activity, from the movement of tectonic plates to explosive eruptions and their impact on the landscape.',
+            title: 'Núi lửa hình thành như thế nào và điều gì khiến chúng phun trào?',
+            description: 'Hành trình khám phá bên trong Trái đất để hiểu các quá trình dẫn đến hoạt động núi lửa, từ chuyển động của các mảng kiến tạo đến các vụ phun trào bùng nổ và tác động của chúng đến cảnh quan.',
             image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop',
             hasImage: true
         },
         {
             id: 2,
-            category: 'Technology',
+            category: 'Công nghệ',
             categoryColor: 'text-green-500',
             categoryIcon: Cpu,
-            title: 'What is the Internet of Things, and how is it changing our lives?',
-            description: 'Explore the growing network of connected devices, their potential benefits and risks, and their impact on various industries and daily life.',
+            title: 'Internet of Things là gì và nó đang thay đổi cuộc sống của chúng ta như thế nào?',
+            description: 'Khám phá mạng lưới thiết bị kết nối ngày càng phát triển, những lợi ích và rủi ro tiềm ẩn của chúng, cũng như tác động đến các ngành công nghiệp khác nhau và cuộc sống hàng ngày.',
             hasImage: false
         },
         {
             id: 3,
-            category: 'Biology',
+            category: 'Sinh học',
             categoryColor: 'text-green-500',
             categoryIcon: Leaf,
-            title: 'How do different species of birds build their nests?',
-            description: 'Explore the incredible diversity of bird nests, from intricate woven structures to simple mud cups, and the unique adaptations of different bird species.',
+            title: 'Các loài chim khác nhau xây tổ như thế nào?',
+            description: 'Khám phá sự đa dạng đáng kinh ngạc của tổ chim, từ các cấu trúc dệt phức tạp đến những chiếc cốc bùn đơn giản, và sự thích nghi độc đáo của các loài chim khác nhau.',
             image: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=400&h=200&fit=crop',
             hasImage: true
         },
         {
             id: 4,
-            category: 'Economics',
+            category: 'Kinh tế',
             categoryColor: 'text-blue-500',
             categoryIcon: TrendingUp,
-            title: 'What are the causes and consequences of economic recessions?',
-            description: 'Dive deep into economic cycles, market forces, and policy responses that shape our financial world.',
+            title: 'Nguyên nhân và hậu quả của suy thoái kinh tế là gì?',
+            description: 'Đi sâu vào các chu kỳ kinh tế, lực lượng thị trường và các phản ứng chính sách định hình thế giới tài chính của chúng ta.',
             hasImage: false
         },
         {
             id: 5,
-            category: 'Biology',
+            category: 'Sinh học',
             categoryColor: 'text-green-500',
             categoryIcon: Leaf,
-            title: 'How do insects play a vital role in our ecosystem?',
-            description: 'Explore the fascinating world of insects and their crucial contributions to pollination, decomposition, and ecological balance.',
+            title: 'Côn trùng đóng vai trò quan trọng như thế nào trong hệ sinh thái của chúng ta?',
+            description: 'Khám phá thế giới hấp dẫn của côn trùng và những đóng góp quan trọng của chúng cho việc thụ phấn, phân hủy và cân bằng sinh thái.',
             image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop',
             hasImage: true
         },
         {
             id: 6,
-            category: 'History',
+            category: 'Lịch sử',
             categoryColor: 'text-amber-600',
             categoryIcon: Scroll,
-            title: 'What were the key events that shaped the Renaissance?',
-            description: 'Discover the cultural, artistic, and scientific revolutions that transformed Europe and influenced the modern world.',
+            title: 'Những sự kiện quan trọng nào đã định hình thời kỳ Phục hưng?',
+            description: 'Khám phá những cuộc cách mạng văn hóa, nghệ thuật và khoa học đã biến đổi châu Âu và ảnh hưởng đến thế giới hiện đại.',
             hasImage: false
         }
     ];
@@ -119,7 +119,7 @@ const HomePage = ({ onNavigateToMain, onStartBlankConversation }) => {
                 {/* Hero Section */}
                 <div className="text-center mb-12">
                     <h1 className="text-6xl font-light text-gray-200 mb-8">
-                        What would you like to learn about?
+                        Bạn muốn tìm hiểu về điều gì?
                     </h1>
 
                     {/* Search Input */}
@@ -130,7 +130,7 @@ const HomePage = ({ onNavigateToMain, onStartBlankConversation }) => {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyPress={handleKeyPress}
-                                placeholder="Ask Learn About"
+                                placeholder="Hỏi Hannah Learn About"
                                 className="flex-1 bg-transparent text-white placeholder-gray-400 focus:outline-none text-lg"
                             />
                             {pendingAttachment && (
@@ -197,10 +197,10 @@ const HomePage = ({ onNavigateToMain, onStartBlankConversation }) => {
                     <span className="text-gray-400">Hannah</span>
                     <div className="flex items-center gap-6">
                         <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                            Privacy
+                            Quyền riêng tư
                         </a>
                         <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                            Terms of Service
+                            Điều khoản dịch vụ
                         </a>
                     </div>
                 </div>

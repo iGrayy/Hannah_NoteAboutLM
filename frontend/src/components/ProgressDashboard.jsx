@@ -3,17 +3,17 @@ import { Trophy, Clock, BookOpen, CheckCircle2 } from 'lucide-react';
 
 const ProgressDashboard = () => {
   const stats = [
-    { label: 'Courses Completed', value: 4, icon: CheckCircle2 },
-    { label: 'Notebooks Created', value: 12, icon: BookOpen },
-    { label: 'Skills Improved', value: 7, icon: Trophy },
-    { label: 'Time Spent (hrs)', value: 46, icon: Clock },
+    { label: 'Khóa học hoàn thành', value: 4, icon: CheckCircle2 },
+    { label: 'Sổ ghi chú đã tạo', value: 12, icon: BookOpen },
+    { label: 'Kỹ năng cải thiện', value: 7, icon: Trophy },
+    { label: 'Thời gian học (giờ)', value: 46, icon: Clock },
   ];
 
   return (
     <div className="h-full flex flex-col">
       <div className="p-3 border-b border-gray-700">
-        <h3 className="text-sm font-semibold text-white">Progress Analytics</h3>
-        <p className="text-xs text-gray-400">Learning metrics (mock)</p>
+        <h3 className="text-sm font-semibold text-white">Phân tích tiến độ</h3>
+        <p className="text-xs text-gray-400">Thống kê học tập (mô phỏng)</p>
       </div>
 
       <div className="p-3 grid grid-cols-2 gap-3">
@@ -30,7 +30,7 @@ const ProgressDashboard = () => {
 
       <div className="p-3">
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
-          <div className="text-sm text-white mb-2">Weekly Activity</div>
+          <div className="text-sm text-white mb-2">Hoạt động hàng tuần</div>
           <div className="grid grid-cols-7 gap-2">
             {[...Array(7)].map((_, i) => (
               <div key={i} className="h-20 bg-gray-700 rounded flex items-end">
