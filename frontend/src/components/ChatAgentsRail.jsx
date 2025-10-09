@@ -1,4 +1,6 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { CheckCircle } from 'lucide-react';
 
 const agents = [
     { id: 'explainer', label: 'Concept Explainer', emoji: '🧑‍🏫' },
@@ -9,16 +11,29 @@ const agents = [
 
 const ChatAgentsRail = ({ activeAgentId, onChange }) => {
     return (
-        <div className="space-y-1">
-            {agents.map((a) => (
-                <button
-                    key={a.id}
-                    onClick={() => onChange(a.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm border border-gray-700 ${activeAgentId === a.id ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
-                    title={a.label}
+        <div className="grid grid-cols-2 gap-3">
+            {agents.map((agent, index) => (
+                <motion.div
+                    key={agent.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => onChange(agent.id)}
+                    className={`studio-card group cursor-pointer ${activeAgentId === agent.id ? 'ring-2 ring-blue-500 border-blue-500' : ''}`}
+                    title={agent.label}
                 >
-                    <span className="mr-2">{a.emoji}</span>{a.label}
-                </button>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="text-lg">{agent.emoji}</div>
+                            <div>
+                                <h3 className="text-sm font-medium text-white">{agent.label}</h3>
+                            </div>
+                        </div>
+                        {activeAgentId === agent.id && (
+                            <CheckCircle className="w-4 h-4 text-green-400" />
+                        )}
+                    </div>
+                </motion.div>
             ))}
         </div>
     );

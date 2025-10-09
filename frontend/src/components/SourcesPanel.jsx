@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Trash2, Calendar, Plus, Search, Upload, FileText, ChevronDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trash2, Calendar, Plus, Search, Upload, FileText, ChevronDown, X, Sparkles } from 'lucide-react';
 
 const SourcesPanel = ({
   sources,
@@ -12,6 +12,9 @@ const SourcesPanel = ({
   onSearchChange,
   onTogglePanel
 }) => {
+  const [showExplore, setShowExplore] = useState(false);
+  const [exploreQuery, setExploreQuery] = useState('');
+  const [sourceType, setSourceType] = useState('web');
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -31,9 +34,9 @@ const SourcesPanel = ({
   };
 
   const handleAddSource = () => {
-    const title = prompt('Nhập tiêu đề nguồn:');
+    const title = prompt('Nhập tiêu đề tài liệu:');
     if (title) {
-      const content = prompt('Nhập nội dung nguồn:');
+      const content = prompt('Nhập nội dung tài liệu:');
       const newSource = {
         title: title,
         content: content || 'Nội dung trống',
@@ -65,7 +68,7 @@ const SourcesPanel = ({
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">Nguồn</h2>
+          <h2 className="text-lg font-semibold text-white">Tài liệu</h2>
           <div className="flex items-center gap-2">
             <button className="text-gray-400 hover:text-white">
               <ChevronDown className="w-4 h-4" />
@@ -87,18 +90,15 @@ const SourcesPanel = ({
             className="flex-1 notebook-button flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Thêm
+            Tài liệu
           </button>
-          <label className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer">
-            <Upload className="w-4 h-4" />
-            Tải lên
-            <input
-              type="file"
-              onChange={handleFileUpload}
-              className="hidden"
-              accept=".txt,.pdf,.doc,.docx,.md"
-            />
-          </label>
+          <button
+            onClick={() => setShowExplore(true)}
+            className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <Search className="w-4 h-4" />
+            Khám phá
+          </button>
         </div>
       </div>
 
@@ -107,9 +107,9 @@ const SourcesPanel = ({
         {sources.length === 0 ? (
           <div className="p-6 text-center">
             <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-300 mb-2">Các nguồn đã lưu sẽ xuất hiện ở đây.</p>
+            <p className="text-gray-300 mb-2">Các tài liệu đã lưu sẽ xuất hiện ở đây.</p>
             <p className="text-sm text-gray-400 mb-4">
-              Nhấp vào 'Thêm nguồn' ở trên để thêm tệp PDF, trang web, văn bản, video hoặc tệp âm thanh.
+              Nhấp vào 'Chọn tài liệu' ở trên để thêm tệp PDF, trang web, văn bản, video hoặc tệp âm thanh.
               Hoặc nhập một tệp trực tiếp từ Google Drive.
             </p>
             <button
@@ -117,7 +117,7 @@ const SourcesPanel = ({
               className="notebook-button flex items-center gap-2 mx-auto"
             >
               <Upload className="w-4 h-4" />
-              Thêm nguồn
+              Chọn tài liệu
             </button>
           </div>
         ) : (
@@ -134,7 +134,7 @@ const SourcesPanel = ({
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-white truncate">
-                      {source.title || 'Nguồn không có tiêu đề'}
+                      {source.title || 'Tài liệu không có tiêu đề'}
                     </h3>
                     <p className="text-sm text-gray-400 mt-1 line-clamp-2">
                       {getPreview(source.content)}
@@ -159,6 +159,125 @@ const SourcesPanel = ({
           </div>
         )}
       </div>
+
+      {/* Explore Sources Modal */}
+      <AnimatePresence>
+        {showExplore && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={() => setShowExplore(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gray-800 rounded-xl p-6 w-full max-w-lg mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-white">Khám phá các nguồn</h2>
+                <button
+                  onClick={() => setShowExplore(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Main Icon */}
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto mb-4 bg-blue-600/20 rounded-full flex items-center justify-center">
+                  <Search className="w-8 h-8 text-blue-400" />
+                  <Sparkles className="w-4 h-4 text-yellow-400 -ml-2 -mt-2" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  Bạn quan tâm đến những chủ đề nào?
+                </h3>
+              </div>
+
+              {/* Text Area */}
+              <div className="mb-6">
+                <textarea
+                  value={exploreQuery}
+                  onChange={(e) => setExploreQuery(e.target.value)}
+                  placeholder="Mô tả nội dung bạn muốn tìm hiểu hoặc nhấp vào 'Thử khám phá' để khám phá một chủ đề mới."
+                  className="w-full h-32 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                />
+              </div>
+
+              {/* Source Type Selection */}
+              <div className="mb-6">
+                <h4 className="text-white font-medium mb-3">Tìm các nguồn từ:</h4>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="sourceType"
+                      value="web"
+                      checked={sourceType === 'web'}
+                      onChange={(e) => setSourceType(e.target.value)}
+                      className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500"
+                    />
+                    <span className="text-gray-300">Web</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="sourceType"
+                      value="google-drive"
+                      checked={sourceType === 'google-drive'}
+                      onChange={(e) => setSourceType(e.target.value)}
+                      className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500"
+                    />
+                    <span className="text-gray-300">Google Drive</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    // Random exploration functionality
+                    const randomTopics = [
+                      "Công nghệ AI và Machine Learning",
+                      "Lịch sử thế giới cổ đại",
+                      "Khoa học vũ trụ và thiên văn học",
+                      "Nghệ thuật và văn hóa",
+                      "Y học và sức khỏe",
+                      "Kinh tế và tài chính"
+                    ];
+                    const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
+                    setExploreQuery(randomTopic);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <Search className="w-4 h-4" />
+                  <Sparkles className="w-4 h-4" />
+                  <span>Xem thông tin thú vị ngẫu nhiên</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (exploreQuery.trim()) {
+                      // Handle explore submission
+                      console.log('Exploring:', exploreQuery, 'from:', sourceType);
+                      setShowExplore(false);
+                    }
+                  }}
+                  disabled={!exploreQuery.trim()}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                >
+                  Gửi
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

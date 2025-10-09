@@ -206,19 +206,6 @@ function App() {
 
         {/* Center Panel - Conversation */}
         <div className="flex-1 flex flex-col bg-gray-900">
-          <div className="p-3 border-b border-gray-700">
-            <div className="flex items-center gap-2 text-xs">
-              {['studio', 'resources', 'career', 'mindmap', 'artifacts', 'progress'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveRightTab(tab)}
-                  className={`px-3 py-1 rounded ${activeRightTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 border border-gray-700'}`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
           <div className="flex-1 flex flex-col">
             <ConversationPanel
               source={activeSource}

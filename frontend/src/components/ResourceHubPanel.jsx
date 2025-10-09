@@ -59,10 +59,10 @@ const ResourceHubPanel = ({ topic = 'Software Engineering' }) => {
               </div>
               <div className="flex items-center gap-2">
                 <button className="text-gray-300 hover:text-white" title="Open">
-                  {r.format === 'Video' ? <PlayCircle className="w-4 h-4"/> : <LinkIcon className="w-4 h-4"/>}
+                  {r.format === 'Video' ? <PlayCircle className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
                 </button>
                 <button onClick={() => toggleBookmark(r.id)} className="text-gray-300 hover:text-white" title="Bookmark">
-                  {bookmarks[r.id] ? <BookmarkCheck className="w-4 h-4 text-yellow-300"/> : <Bookmark className="w-4 h-4"/>}
+                  {bookmarks[r.id] ? <BookmarkCheck className="w-4 h-4 text-yellow-300" /> : <Bookmark className="w-4 h-4" />}
                 </button>
               </div>
             </div>
