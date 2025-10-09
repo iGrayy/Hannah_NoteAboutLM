@@ -1,21 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, Upload, Search, BookOpen, Mountain, Cpu, Leaf, TrendingUp, Scroll, Target } from 'lucide-react';
+import { Menu, Upload, Mountain, Cpu, Leaf, TrendingUp, Scroll, Target, X } from 'lucide-react';
 import LearningCard from './LearningCard';
 
-const HomePage = ({ onNavigateToMain, onNavigateToSubjects, onNavigateToLearningPath }) => {
+const HomePage = ({ onNavigateToMain, onNavigateToLearningPath, onStartBlankConversation }) => {
     const [searchQuery, setSearchQuery] = useState('');
+    const [pendingAttachment, setPendingAttachment] = useState(null);
+    const fileInputRef = useRef(null);
 
     const handleSearch = () => {
-        if (searchQuery.trim()) {
-            // Navigate to main app with search query
-            onNavigateToMain(searchQuery);
-        }
+        const query = searchQuery.trim() ? searchQuery : '';
+        // Navigate to main app; include pendingAttachment if any
+        onNavigateToMain(query, pendingAttachment);
+        // Clear local attachment after navigating
+        setPendingAttachment(null);
     };
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             handleSearch();
+        }
+    };
+
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const attachment = { name: file.name, type: file.type || 'file', size: file.size };
+            // Only store attachment; allow user to continue typing before sending
+            setPendingAttachment(attachment);
         }
     };
 
@@ -90,7 +102,7 @@ const HomePage = ({ onNavigateToMain, onNavigateToSubjects, onNavigateToLearning
                     </button>
                     <div className="flex items-center gap-2">
                         <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 bg-clip-text text-transparent">
-                            Google
+                            Hannah
                         </span>
                         <span className="text-xl text-gray-300">Learn About</span>
                     </div>
@@ -128,40 +140,42 @@ const HomePage = ({ onNavigateToMain, onNavigateToSubjects, onNavigateToLearning
                                 placeholder="Ask Learn About"
                                 className="flex-1 bg-transparent text-white placeholder-gray-400 focus:outline-none text-lg"
                             />
+                            {pendingAttachment && (
+                                <div className="ml-3 flex items-center gap-2 bg-gray-700 rounded-full px-3 py-1 max-w-[50%]">
+                                    <div className="w-5 h-5 rounded bg-red-500/80 text-white text-[10px] flex items-center justify-center">PDF</div>
+                                    <span className="text-xs text-gray-200 truncate">{pendingAttachment.name}</span>
+                                    <button onClick={() => setPendingAttachment(null)} className="p-1 text-gray-400 hover:text-white" title="Gỡ tệp">
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            )}
                             <button
-                                onClick={handleSearch}
-                                className="ml-4 p-2 text-gray-400 hover:text-white transition-colors"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="ml-2 p-2 text-gray-400 hover:text-white transition-colors"
+                                title="Tải file lên"
                             >
-                                <Search className="w-5 h-5" />
-                            </button>
-                            <button className="ml-2 p-2 text-gray-400 hover:text-white transition-colors">
                                 <Upload className="w-5 h-5" />
                             </button>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf,.doc,.docx,.txt"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                            />
                         </div>
+                        {/* Removed external attachment chip; inline chip remains inside the input row */}
                     </div>
 
-                    {/* Featured Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="max-w-2xl mx-auto bg-white rounded-2xl p-6 shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300"
-                        onClick={onNavigateToSubjects}
-                    >
-                        <div className="flex items-center gap-6">
-                            <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
-                                <BookOpen className="w-10 h-10 text-blue-600" />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                                    Chọn Nguồn
-                                </h3>
-                                <p className="text-gray-600">
-                                    Chọn tài liệu từ các môn học có sẵn hoặc tải lên tài liệu mới để bắt đầu học tập và khám phá kiến thức.
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
+                    {/* Quick start button */}
+                    <div className="text-center">
+                        <button
+                            onClick={onStartBlankConversation}
+                            className="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                        >
+                            Bắt đầu trò chuyện
+                        </button>
+                    </div>
                 </div>
             </main>
 
@@ -187,7 +201,7 @@ const HomePage = ({ onNavigateToMain, onNavigateToSubjects, onNavigateToLearning
             {/* Footer */}
             <footer className="bg-gray-800 px-6 py-4">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <span className="text-gray-400">Google</span>
+                    <span className="text-gray-400">Hannah</span>
                     <div className="flex items-center gap-6">
                         <a href="#" className="text-gray-400 hover:text-white transition-colors">
                             Privacy

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Calendar, Plus, Search, Upload, FileText, ChevronDown, X, Sparkles } from 'lucide-react';
+import { Trash2, Calendar, Plus, Search, Upload, FileText, ChevronDown, X, Sparkles, Bot, Link as LinkIcon, Youtube, Clipboard, Folder } from 'lucide-react';
 
 const SourcesPanel = ({
   sources,
@@ -10,12 +10,12 @@ const SourcesPanel = ({
   onAddSource,
   searchQuery,
   onSearchChange,
-  onTogglePanel,
-  onNavigateToSubjects
+  onTogglePanel
 }) => {
   const [showExplore, setShowExplore] = useState(false);
   const [exploreQuery, setExploreQuery] = useState('');
   const [sourceType, setSourceType] = useState('web');
+  const fileInputRef = useRef(null);
 
 
   const formatDate = (dateString) => {
@@ -90,18 +90,11 @@ const SourcesPanel = ({
         {/* Action Buttons */}
         <div className="flex gap-2 mb-4">
           <button
-            onClick={onNavigateToSubjects}
-            className="flex-1 notebook-button flex items-center justify-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Tài liệu
-          </button>
-          <button
             onClick={() => setShowExplore(true)}
             className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
           >
-            <Search className="w-4 h-4" />
-            Khám phá
+            <Plus className="w-4 h-4" />
+            Cuộc trò chuyện mới
           </button>
         </div>
       </div>
@@ -110,18 +103,18 @@ const SourcesPanel = ({
       <div className="flex-1 overflow-y-auto">
         {sources.length === 0 ? (
           <div className="p-6 text-center">
-            <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-300 mb-2">Các tài liệu đã lưu sẽ xuất hiện ở đây.</p>
+            <Bot className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-300 mb-2">Bắt đầu cuộc trò chuyện với AI</p>
             <p className="text-sm text-gray-400 mb-4">
-              Nhấp vào 'Chọn tài liệu' ở trên để thêm tệp PDF, trang web, văn bản, video hoặc tệp âm thanh.
-              Hoặc nhập một tệp trực tiếp từ Google Drive.
+              Đặt câu hỏi về kiến thức bạn quan tâm hoặc khám phá tệp tư liệu để trò chuyện sâu hơn.
             </p>
             <button
-              onClick={handleAddSource}
+              onClick={() => setShowExplore(true)}
               className="notebook-button flex items-center gap-2 mx-auto"
+              title="Cuộc trò chuyện mới"
             >
-              <Upload className="w-4 h-4" />
-              Chọn tài liệu
+              <Plus className="w-4 h-4" />
+              Cuộc trò chuyện mới
             </button>
           </div>
         ) : (
@@ -178,105 +171,84 @@ const SourcesPanel = ({
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-gray-800 rounded-xl p-6 w-full max-w-lg mx-4"
+              className="bg-gray-800 rounded-2xl p-8 w-full max-w-5xl mx-4"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-white">Khám phá các nguồn</h2>
-                <button
-                  onClick={() => setShowExplore(false)}
-                  className="text-gray-400 hover:text-white"
-                >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-semibold text-lg">Tải tệp lên</span>
+                </div>
+                <button onClick={() => setShowExplore(false)} className="text-gray-400 hover:text-white">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Main Icon */}
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 bg-blue-600/20 rounded-full flex items-center justify-center">
-                  <Search className="w-8 h-8 text-blue-400" />
-                  <Sparkles className="w-4 h-4 text-yellow-400 -ml-2 -mt-2" />
+              {/* Dropzone */}
+              <div className="border-2 border-dashed border-gray-600 rounded-xl p-14 text-center mb-8 bg-gray-900/40">
+                <div className="w-16 h-16 mx-auto mb-5 bg-blue-600/20 rounded-full flex items-center justify-center">
+                  <Upload className="w-8 h-8 text-blue-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  Bạn quan tâm đến những chủ đề nào?
-                </h3>
+                <div className="text-white font-medium text-lg">Tải tệp lên</div>
+                <div className="text-gray-400 mt-2">Kéo và thả hoặc <button onClick={() => fileInputRef.current?.click()} className="text-blue-400 hover:text-blue-300 underline">chọn tệp</button> để tải lên</div>
+                <div className="text-xs text-gray-500 mt-4">Các loại tệp được hỗ trợ: PDF, .txt, Markdown, Âm thanh (ví dụ: mp3)</div>
+                <input ref={fileInputRef} type="file" accept=".pdf,.txt,.md,.mp3,.wav,.doc,.docx" onChange={handleFileUpload} className="hidden" />
               </div>
 
-              {/* Text Area */}
-              <div className="mb-6">
-                <textarea
-                  value={exploreQuery}
-                  onChange={(e) => setExploreQuery(e.target.value)}
-                  placeholder="Mô tả nội dung bạn muốn tìm hiểu hoặc nhấp vào 'Thử khám phá' để khám phá một chủ đề mới."
-                  className="w-full h-32 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                />
-              </div>
-
-              {/* Source Type Selection */}
-              <div className="mb-6">
-                <h4 className="text-white font-medium mb-3">Tìm các nguồn từ:</h4>
-                <div className="space-y-3">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="sourceType"
-                      value="web"
-                      checked={sourceType === 'web'}
-                      onChange={(e) => setSourceType(e.target.value)}
-                      className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500"
-                    />
-                    <span className="text-gray-300">Web</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="sourceType"
-                      value="google-drive"
-                      checked={sourceType === 'google-drive'}
-                      onChange={(e) => setSourceType(e.target.value)}
-                      className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500"
-                    />
-                    <span className="text-gray-300">Google Drive</span>
-                  </label>
+              {/* Source options */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {/* Google Workspace */}
+                <div className="bg-gray-900/40 border border-gray-700 rounded-xl p-4">
+                  <div className="text-gray-300 font-medium mb-3">Google Workspace</div>
+                  <button className="w-full flex items-center justify-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg">
+                    <Folder className="w-4 h-4" />
+                    Google Drive
+                  </button>
+                </div>
+                {/* Links */}
+                <div className="bg-gray-900/40 border border-gray-700 rounded-xl p-4">
+                  <div className="text-gray-300 font-medium mb-3">Liên kết</div>
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setExploreQuery('https://')} className="flex-1 flex items-center justify-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg">
+                      <LinkIcon className="w-4 h-4" />
+                      Trang web
+                    </button>
+                    <button onClick={() => setExploreQuery('https://youtube.com/')} className="flex-1 flex items-center justify-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg">
+                      <Youtube className="w-4 h-4" />
+                      YouTube
+                    </button>
+                  </div>
+                </div>
+                {/* Paste text */}
+                <div className="bg-gray-900/40 border border-gray-700 rounded-xl p-4">
+                  <div className="text-gray-300 font-medium mb-3">Dán văn bản</div>
+                  <button onClick={() => setSourceType('paste')} className="w-full flex items-center justify-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg">
+                    <Clipboard className="w-4 h-4" />
+                    Văn bản đã sao chép
+                  </button>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    // Random exploration functionality
-                    const randomTopics = [
-                      "Công nghệ AI và Machine Learning",
-                      "Lịch sử thế giới cổ đại",
-                      "Khoa học vũ trụ và thiên văn học",
-                      "Nghệ thuật và văn hóa",
-                      "Y học và sức khỏe",
-                      "Kinh tế và tài chính"
-                    ];
-                    const randomTopic = randomTopics[Math.floor(Math.random() * randomTopics.length)];
-                    setExploreQuery(randomTopic);
-                  }}
-                  className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
-                >
-                  <Search className="w-4 h-4" />
-                  <Sparkles className="w-4 h-4" />
-                  <span>Xem thông tin thú vị ngẫu nhiên</span>
-                </button>
-                <button
-                  onClick={() => {
-                    if (exploreQuery.trim()) {
-                      // Handle explore submission
-                      console.log('Exploring:', exploreQuery, 'from:', sourceType);
-                      setShowExplore(false);
-                    }
-                  }}
-                  disabled={!exploreQuery.trim()}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
-                >
-                  Gửi
-                </button>
+              {/* Paste area when selected */}
+              {sourceType === 'paste' && (
+                <div className="mb-6">
+                  <textarea value={exploreQuery} onChange={(e) => setExploreQuery(e.target.value)} placeholder="Dán nội dung văn bản của bạn vào đây" className="w-full h-32 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" />
+                </div>
+              )}
+
+              {/* Footer actions and quota */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-400 text-sm">Giới hạn tệp</span>
+                  <div className="w-56 h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-full w-6 bg-blue-500" />
+                  </div>
+                  <span className="text-gray-400 text-sm">1/50</span>
+                </div>
+                <div className="flex gap-3">
+                  <button onClick={() => setShowExplore(false)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg">Hủy</button>
+                  <button onClick={() => setShowExplore(false)} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Xong</button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

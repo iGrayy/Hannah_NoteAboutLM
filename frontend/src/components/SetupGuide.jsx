@@ -41,10 +41,10 @@ const SetupGuide = ({ isOpen, onClose }) => {
 
                     <div className="space-y-4 text-sm text-gray-300">
                         <div>
-                            <h3 className="text-lg font-medium text-white mb-2">Bước 1: Lấy API Key từ Google AI Studio</h3>
+                            <h3 className="text-lg font-medium text-white mb-2">Bước 1: Lấy API Key từ Hannah AI Studio</h3>
                             <ol className="list-decimal list-inside space-y-2 ml-4">
                                 <li>Truy cập <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                                    Google AI Studio <ExternalLink className="w-3 h-3" />
+                                    Hannah AI Studio <ExternalLink className="w-3 h-3" />
                                 </a></li>
                                 <li>Đăng nhập bằng tài khoản Google của bạn</li>
                                 <li>Nhấp vào "Create API Key"</li>
@@ -89,7 +89,7 @@ const SetupGuide = ({ isOpen, onClose }) => {
                             <ul className="space-y-1 text-blue-200">
                                 <li>• API key được lưu trữ an toàn trên server, không bao giờ được gửi đến frontend</li>
                                 <li>• Đảm bảo file .env không được commit vào Git</li>
-                                <li>• API key có giới hạn sử dụng, kiểm tra quota trong Google AI Studio</li>
+                                <li>• API key có giới hạn sử dụng, kiểm tra quota trong Hannah AI Studio</li>
                             </ul>
                         </div>
 

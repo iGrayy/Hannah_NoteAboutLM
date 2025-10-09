@@ -6,11 +6,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'google': ['Google Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        'hannah': ['Hannah Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       colors: {
-        'google-blue': '#1a73e8',
-        'google-gray': '#5f6368',
+        'hannah-blue': '#1a73e8',
+        'hannah-gray': '#5f6368',
       }
     },
   },

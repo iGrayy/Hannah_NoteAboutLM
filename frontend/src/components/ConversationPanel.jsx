@@ -21,7 +21,7 @@ import {
     Sparkles
 } from 'lucide-react';
 
-const ConversationPanel = ({ source, conversations, onUpdateConversations }) => {
+const ConversationPanel = ({ source, conversations, onUpdateConversations, searchQuery, onSearchChange, autoSend = false, pendingAttachment = null, onConsumeAttachment }) => {
     const [inputMessage, setInputMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
@@ -30,6 +30,7 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
     const [sourceType, setSourceType] = useState('web');
     const [chatStyle, setChatStyle] = useState('default');
     const [answerLength, setAnswerLength] = useState('default');
+    const [hasAutoSent, setHasAutoSent] = useState(false);
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -41,16 +42,46 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
         scrollToBottom();
     }, [conversations]);
 
+    // Set input message / auto-send when navigating from HomePage
+    useEffect(() => {
+        const hasQuery = searchQuery && searchQuery.trim();
+        const hasAttachment = !!pendingAttachment;
+        if ((hasQuery || hasAttachment) && !hasAutoSent) {
+            const composedMessage = hasQuery ? searchQuery : pendingAttachment?.name;
+            setInputMessage(composedMessage || '');
+
+            if (autoSend) {
+                setHasAutoSent(true);
+                setTimeout(() => {
+                    handleSendAttachmentAware(composedMessage, pendingAttachment);
+                    if (onConsumeAttachment) onConsumeAttachment();
+                }, 100);
+            }
+
+            if (hasQuery && onSearchChange) {
+                onSearchChange('');
+            }
+        }
+    }, [searchQuery, pendingAttachment, onSearchChange, autoSend, hasAutoSent]);
+
     const handleSendMessage = async () => {
-        if (!inputMessage.trim() || !source) {
-            alert('Vui lòng chọn một nguồn và nhập câu hỏi');
+        if (!inputMessage.trim()) {
+            return;
+        }
+        handleSendMessageWithContent(inputMessage);
+    };
+
+    const handleSendMessageWithContent = async (messageContent) => {
+        if (!messageContent || !messageContent.trim()) {
+            console.log('Message content is empty, not sending');
             return;
         }
 
+        console.log('Sending message with content:', messageContent);
         const userMessage = {
             id: Date.now(),
             type: 'user',
-            content: inputMessage,
+            content: messageContent,
             timestamp: new Date().toISOString()
         };
 
@@ -61,11 +92,25 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
 
         // Simulate AI response with rich content
         setTimeout(() => {
-            const aiResponse = generateRichResponse(inputMessage, source);
+            const aiResponse = generateRichResponse(messageContent, source);
             const finalConversations = [...newConversations, aiResponse];
             onUpdateConversations(finalConversations);
             setIsLoading(false);
+            console.log('AI response sent');
         }, 2000);
+    };
+
+    // Send message that may include an attachment metadata
+    const handleSendAttachmentAware = (messageContent, attachment) => {
+        const parts = [];
+        if (attachment?.name) {
+            parts.push(`[Tệp đính kèm] ${attachment.name}`);
+        }
+        if (messageContent && messageContent.trim()) {
+            parts.push(messageContent.trim());
+        }
+        const composed = parts.join('\n');
+        handleSendMessageWithContent(composed);
     };
 
     const generateRichResponse = (question, source) => {
@@ -159,7 +204,7 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
         }
     };
 
-    if (!source) {
+    if (!source && conversations.length === 0) {
         return (
             <div className="flex-1 flex flex-col bg-gray-900">
                 {/* Header */}
@@ -181,15 +226,9 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
                         <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                         <h3 className="text-xl font-medium text-white mb-2">Chào mừng đến với AI Chat</h3>
                         <p className="text-gray-400 mb-4">
-                            Hãy khám phá các nguồn và bắt đầu đặt câu hỏi!
+                            Hãy cùng khám phá và bắt đầu đặt câu hỏi!
                         </p>
-                        <button
-                            onClick={() => setShowExplore(true)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 flex items-center gap-2"
-                        >
-                            <Search className="w-5 h-5" />
-                            Khám phá
-                        </button>
+
                     </div>
                 </div>
 
@@ -198,9 +237,11 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
                     <div className="flex items-center gap-2">
                         <input
                             type="text"
-                            placeholder="Tải một nguồn lên để bắt đầu"
+                            placeholder="Nhập câu hỏi để bắt đầu"
                             className="flex-1 notebook-input"
-                            disabled
+                            value={inputMessage}
+                            onChange={(e) => setInputMessage(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                         />
                         <button
                             onClick={() => fileInputRef.current?.click()}
@@ -216,8 +257,7 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
                             onChange={handleFileUpload}
                             className="hidden"
                         />
-                        <span className="text-sm text-gray-400">0 nguồn</span>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-colors duration-200" disabled>
+                        <button onClick={handleSendMessage} disabled={!inputMessage.trim() || isLoading} className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white p-2 rounded-full transition-colors duration-200">
                             <Send className="w-4 h-4" />
                         </button>
                     </div>
@@ -283,7 +323,7 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
                             ) : (
                                 <div className="w-full max-w-5xl">
                                     <div className="space-y-6">
-                                        {/* Main Answer - Google Learn Style */}
+                                        {/* Main Answer - Hannah Learn Style */}
                                         {message.type === 'ai' && message.richContent && (
                                             <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
                                                 <div className="text-lg leading-relaxed text-white">
@@ -295,7 +335,7 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
                                             </div>
                                         )}
 
-                                        {/* Rich Content for AI messages - Google Learn Style */}
+                                        {/* Rich Content for AI messages - Hannah Learn Style */}
                                         {message.type === 'ai' && message.richContent && (
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                                 {/* Left Column - Main Content */}
@@ -473,9 +513,8 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder={source ? "Nhập câu hỏi của bạn..." : "Vui lòng chọn nguồn trước"}
-                        disabled={!source}
-                        className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                        placeholder={"Nhập câu hỏi của bạn..."}
+                        className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     <button
                         onClick={() => fileInputRef.current?.click()}
@@ -493,7 +532,7 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
                     />
                     <button
                         onClick={handleSendMessage}
-                        disabled={!inputMessage.trim() || !source || isLoading}
+                        disabled={!inputMessage.trim() || isLoading}
                         className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white p-2 rounded-lg transition-colors"
                     >
                         <Send className="w-4 h-4" />
@@ -685,7 +724,7 @@ const ConversationPanel = ({ source, conversations, onUpdateConversations }) => 
                                             onChange={(e) => setSourceType(e.target.value)}
                                             className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500"
                                         />
-                                        <span className="text-gray-300">Google Drive</span>
+                                        <span className="text-gray-300">Hannah Drive</span>
                                     </label>
                                 </div>
                             </div>

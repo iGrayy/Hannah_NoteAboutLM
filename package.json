@@ -1,7 +1,7 @@
 {
   "name": "google-notebook",
   "version": "1.0.0",
-  "description": "A Google Notebook-style note-taking app with AI integration",
+  "description": "A Hannah Notebook-style note-taking app with AI integration",
   "scripts": {
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",

@@ -36,7 +36,6 @@ import ProgressDashboard from './components/ProgressDashboard';
 import AIArtifactPanel from './components/AIArtifactPanel';
 import APIStatus from './components/APIStatus';
 import SetupGuide from './components/SetupGuide';
-import SubjectsPage from './components/SubjectsPage';
 import HomePage from './components/HomePage';
 import LearningPathPage from './components/LearningPathPage';
 
@@ -45,11 +44,12 @@ function App() {
   const [conversations, setConversations] = useState([]);
   const [activeSourceId, setActiveSourceId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [pendingAttachment, setPendingAttachment] = useState(null);
   const [isSourcesOpen, setIsSourcesOpen] = useState(true);
   const [isStudioOpen, setIsStudioOpen] = useState(true);
   const [showSetupGuide, setShowSetupGuide] = useState(false);
   const [activeRightTab, setActiveRightTab] = useState('studio'); // studio | resources | career | mindmap | artifacts | progress
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'main' | 'subjects' | 'learning-path'
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'main' | 'learning-path'
 
   // Load sources from localStorage on mount
   useEffect(() => {
@@ -109,35 +109,53 @@ function App() {
 
   const activeSource = sources.find(source => source.id === activeSourceId);
 
-  const handleNavigateToMain = (searchQuery = '') => {
+  const handleNavigateToMain = (searchQuery = '', attachment = null) => {
     setCurrentPage('main');
     if (searchQuery) {
       setSearchQuery(searchQuery);
     }
+    if (attachment) {
+      setPendingAttachment(attachment);
+    }
   };
 
-  const handleNavigateToSubjects = () => {
-    setCurrentPage('subjects');
-  };
 
   const handleNavigateToLearningPath = () => {
     setCurrentPage('learning-path');
   };
 
+  const handleStartBlankConversation = () => {
+    setConversations([
+      {
+        id: Date.now(),
+        type: 'ai',
+        content: 'Chào bạn! Hãy đặt câu hỏi hoặc tải tệp để bắt đầu.',
+        timestamp: new Date().toISOString(),
+      },
+    ]);
+    setCurrentPage('main');
+  };
+
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
       {currentPage === 'home' ? (
-        <HomePage onNavigateToMain={handleNavigateToMain} onNavigateToSubjects={handleNavigateToSubjects} onNavigateToLearningPath={handleNavigateToLearningPath} />
+        <HomePage onNavigateToMain={handleNavigateToMain} onNavigateToLearningPath={handleNavigateToLearningPath} onStartBlankConversation={handleStartBlankConversation} />
       ) : (
         <>
           {/* Header */}
           <div className="bg-gray-800 border-b border-gray-700 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">N</span>
-                </div>
-                <h1 className="text-xl font-semibold text-white">Untitled notebook</h1>
+                <button
+                  onClick={() => setCurrentPage('home')}
+                  className="flex items-center gap-2 group"
+                  title="Về trang chủ"
+                >
+                  <h1 className="text-xl font-semibold text-white flex items-center gap-2 cursor-pointer">
+                    <span className="font-bold bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 bg-clip-text text-transparent group-hover:brightness-110">Hannah</span>
+                    <span className="text-gray-300 group-hover:text-white">Learn About</span>
+                  </h1>
+                </button>
               </div>
 
               <div className="flex items-center gap-4">
@@ -165,9 +183,7 @@ function App() {
 
           {/* Main Content */}
           <div className="flex-1 flex">
-            {currentPage === 'subjects' ? (
-              <SubjectsPage onBack={() => setCurrentPage('main')} onNavigateToMain={handleNavigateToMain} />
-            ) : currentPage === 'learning-path' ? (
+            {currentPage === 'learning-path' ? (
               <LearningPathPage onBack={() => setCurrentPage('main')} />
             ) : (
               <>
@@ -241,6 +257,11 @@ function App() {
                       source={activeSource}
                       conversations={conversations}
                       onUpdateConversations={setConversations}
+                      searchQuery={searchQuery}
+                      onSearchChange={setSearchQuery}
+                      autoSend={true}
+                      pendingAttachment={pendingAttachment}
+                      onConsumeAttachment={() => setPendingAttachment(null)}
                     />
                   </div>
                 </div>
