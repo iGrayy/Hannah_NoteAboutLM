@@ -37,11 +37,13 @@ import AIArtifactPanel from './components/AIArtifactPanel';
 import APIStatus from './components/APIStatus';
 import SetupGuide from './components/SetupGuide';
 import HomePage from './components/HomePage';
-import LearningPathPage from './components/LearningPathPage';
+// LearningPathPage removed
 
 function App() {
   const [sources, setSources] = useState([]);
   const [conversations, setConversations] = useState([]);
+  const [conversationsMeta, setConversationsMeta] = useState([]); // {id, title, createdAt}
+  const [activeConversationId, setActiveConversationId] = useState(null);
   const [activeSourceId, setActiveSourceId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [pendingAttachment, setPendingAttachment] = useState(null);
@@ -49,7 +51,7 @@ function App() {
   const [isStudioOpen, setIsStudioOpen] = useState(true);
   const [showSetupGuide, setShowSetupGuide] = useState(false);
   const [activeRightTab, setActiveRightTab] = useState('studio'); // studio | resources | career | mindmap | artifacts | progress
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'main' | 'learning-path'
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'main'
 
   // Load sources from localStorage on mount
   useEffect(() => {
@@ -59,6 +61,22 @@ function App() {
       setSources(parsedSources);
       if (parsedSources.length > 0 && !activeSourceId) {
         setActiveSourceId(parsedSources[0].id);
+      }
+    }
+  }, []);
+
+  // Load conversations metadata on mount
+  useEffect(() => {
+    const savedConvs = localStorage.getItem('notebook-conversations');
+    if (savedConvs) {
+      try {
+        const parsed = JSON.parse(savedConvs);
+        setConversationsMeta(parsed);
+        if (parsed.length > 0 && !activeConversationId) {
+          setActiveConversationId(parsed[0].id);
+        }
+      } catch (e) {
+        console.warn('Failed to parse conversations from storage');
       }
     }
   }, []);
@@ -116,30 +134,61 @@ function App() {
     }
     if (attachment) {
       setPendingAttachment(attachment);
+      // Create a new conversation thread named after the file
+      const newConvId = Date.now().toString();
+      const newMeta = {
+        id: newConvId,
+        title: attachment.name,
+        createdAt: new Date().toISOString(),
+      };
+      setConversationsMeta((prev) => [newMeta, ...prev]);
+      setActiveConversationId(newConvId);
+      // Start with an empty message list; ConversationPanel will auto-send
+      setConversations([]);
     }
   };
 
 
-  const handleNavigateToLearningPath = () => {
-    setCurrentPage('learning-path');
+  // Learning Path flow removed
+
+  // Persist conversations when meta changes
+  useEffect(() => {
+    localStorage.setItem('notebook-conversations', JSON.stringify(conversationsMeta));
+  }, [conversationsMeta]);
+
+  const handleDeleteConversation = (conversationId) => {
+    setConversationsMeta((prev) => {
+      const next = prev.filter((c) => c.id !== conversationId);
+      // If deleting the active conversation, switch to the next available or clear
+      setActiveConversationId((currentActive) => {
+        if (currentActive !== conversationId) return currentActive;
+        return next.length > 0 ? next[0].id : null;
+      });
+      // If the deleted conversation was active, clear current message list
+      setConversations((msgs) => {
+        return activeConversationId === conversationId ? [] : msgs;
+      });
+      return next;
+    });
   };
 
   const handleStartBlankConversation = () => {
-    setConversations([
-      {
-        id: Date.now(),
-        type: 'ai',
-        content: 'Chào bạn! Hãy đặt câu hỏi hoặc tải tệp để bắt đầu.',
-        timestamp: new Date().toISOString(),
-      },
-    ]);
+    const newConvId = Date.now().toString();
+    const newMeta = {
+      id: newConvId,
+      title: 'Cuộc trò chuyện mới',
+      createdAt: new Date().toISOString(),
+    };
+    setConversationsMeta((prev) => [newMeta, ...prev]);
+    setActiveConversationId(newConvId);
+    setConversations([]);
     setCurrentPage('main');
   };
 
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
       {currentPage === 'home' ? (
-        <HomePage onNavigateToMain={handleNavigateToMain} onNavigateToLearningPath={handleNavigateToLearningPath} onStartBlankConversation={handleStartBlankConversation} />
+        <HomePage onNavigateToMain={handleNavigateToMain} onStartBlankConversation={handleStartBlankConversation} />
       ) : (
         <>
           {/* Header */}
@@ -183,9 +232,7 @@ function App() {
 
           {/* Main Content */}
           <div className="flex-1 flex">
-            {currentPage === 'learning-path' ? (
-              <LearningPathPage onBack={() => setCurrentPage('main')} />
-            ) : (
+            {
               <>
                 {/* Left Panel - Sources */}
                 <AnimatePresence>
@@ -207,6 +254,10 @@ function App() {
                         onSearchChange={setSearchQuery}
                         onTogglePanel={() => setIsSourcesOpen(false)}
                         onNavigateToSubjects={() => setCurrentPage('subjects')}
+                        conversationsMeta={conversationsMeta}
+                        activeConversationId={activeConversationId}
+                        onSelectConversation={setActiveConversationId}
+                        onDeleteConversation={handleDeleteConversation}
                       />
                     </motion.div>
                   ) : (
@@ -362,7 +413,7 @@ function App() {
                 {/* Studio compact rail replaces floating toggle when collapsed */}
                 {/* Sources compact rail replaces floating toggle when collapsed */}
               </>
-            )}
+            }
           </div>
 
           {/* Footer */}

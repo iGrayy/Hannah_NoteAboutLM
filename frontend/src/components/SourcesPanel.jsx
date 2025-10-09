@@ -10,7 +10,11 @@ const SourcesPanel = ({
   onAddSource,
   searchQuery,
   onSearchChange,
-  onTogglePanel
+  onTogglePanel,
+  conversationsMeta = [],
+  activeConversationId,
+  onSelectConversation,
+  onDeleteConversation
 }) => {
   const [showExplore, setShowExplore] = useState(false);
   const [exploreQuery, setExploreQuery] = useState('');
@@ -72,7 +76,7 @@ const SourcesPanel = ({
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">Tài liệu</h2>
+          <h2 className="text-lg font-semibold text-white">{conversationsMeta.length > 0 ? 'Cuộc trò chuyện' : 'Tài liệu'}</h2>
           <div className="flex items-center gap-2">
             <button className="text-gray-400 hover:text-white">
               <ChevronDown className="w-4 h-4" />
@@ -101,7 +105,7 @@ const SourcesPanel = ({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        {sources.length === 0 ? (
+        {conversationsMeta.length === 0 ? (
           <div className="p-6 text-center">
             <Bot className="w-16 h-16 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-300 mb-2">Bắt đầu cuộc trò chuyện với AI</p>
@@ -119,34 +123,32 @@ const SourcesPanel = ({
           </div>
         ) : (
           <div className="p-2">
-            {sources.map((source, index) => (
+            {conversationsMeta.map((conv, index) => (
               <motion.div
-                key={source.id}
+                key={conv.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className={`source-item ${activeSourceId === source.id ? 'active' : ''}`}
-                onClick={() => onSelectSource(source.id)}
+                className={`source-item ${activeConversationId === conv.id ? 'active' : ''}`}
+                onClick={() => onSelectConversation && onSelectConversation(conv.id)}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-white truncate">
-                      {source.title || 'Tài liệu không có tiêu đề'}
+                      {conv.title || 'Cuộc trò chuyện'}
                     </h3>
-                    <p className="text-sm text-gray-400 mt-1 line-clamp-2">
-                      {getPreview(source.content)}
-                    </p>
                     <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
                       <Calendar className="w-3 h-3" />
-                      <span>{formatDate(source.updatedAt)}</span>
+                      <span>{formatDate(conv.createdAt)}</span>
                     </div>
                   </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDeleteSource(source.id);
+                      onDeleteConversation && onDeleteConversation(conv.id);
                     }}
                     className="ml-2 p-1 text-gray-400 hover:text-red-400 transition-colors duration-200"
+                    title="Xóa cuộc trò chuyện"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

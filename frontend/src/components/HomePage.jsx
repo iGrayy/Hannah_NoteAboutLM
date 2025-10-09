@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Menu, Upload, Mountain, Cpu, Leaf, TrendingUp, Scroll, Target, X } from 'lucide-react';
 import LearningCard from './LearningCard';
 
-const HomePage = ({ onNavigateToMain, onNavigateToLearningPath, onStartBlankConversation }) => {
+const HomePage = ({ onNavigateToMain, onStartBlankConversation }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [pendingAttachment, setPendingAttachment] = useState(null);
     const fileInputRef = useRef(null);
@@ -108,13 +108,6 @@ const HomePage = ({ onNavigateToMain, onNavigateToLearningPath, onStartBlankConv
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={onNavigateToLearningPath}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                    >
-                        <Target className="w-4 h-4" />
-                        <span className="text-sm">Learning Path</span>
-                    </button>
                     <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
                         <span className="text-white text-sm">U</span>
                     </div>
