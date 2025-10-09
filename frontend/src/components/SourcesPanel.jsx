@@ -10,11 +10,14 @@ const SourcesPanel = ({
   onAddSource,
   searchQuery,
   onSearchChange,
-  onTogglePanel
+  onTogglePanel,
+  onNavigateToSubjects
 }) => {
   const [showExplore, setShowExplore] = useState(false);
   const [exploreQuery, setExploreQuery] = useState('');
   const [sourceType, setSourceType] = useState('web');
+
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -63,6 +66,7 @@ const SourcesPanel = ({
     }
   };
 
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -86,7 +90,7 @@ const SourcesPanel = ({
         {/* Action Buttons */}
         <div className="flex gap-2 mb-4">
           <button
-            onClick={handleAddSource}
+            onClick={onNavigateToSubjects}
             className="flex-1 notebook-button flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" />
