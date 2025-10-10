@@ -54,6 +54,8 @@ setx GOOGLE_CLOUD_LOCATION "us-central1"
 ```
 # PowerShell
 setx GOOGLE_API_KEY "YOUR_API_KEY_VALUE"
+# (Optional) choose model alias or version
+setx GEMINI_MODEL "gemini-2.5-flash-lite"
 ```
 
 You can verify which mode is active:
@@ -63,6 +65,15 @@ curl http://localhost:8000/auth/mode
 ```
 
 Response includes `mode`: `service_account`, `api_key`, or `none`.
+
+### Model selection
+- You can choose the Gemini model via `GEMINI_MODEL` (default `gemini-1.5-flash-001`). Examples:
+  - `gemini-1.5-flash-001`
+  - `gemini-1.0-pro-001`
+  - `gemini-2.5-flash-lite`
+- If `GOOGLE_API_KEY` is set (API key mode), backend calls the REST endpoint:
+  `https://aiplatform.googleapis.com/v1/publishers/google/models/{GEMINI_MODEL}:generateContent?key=...`
+  with payload `{"contents":[{"role":"user","parts":[{"text":"..."}]}]}` matching your Cloud Console example.
 
 ## Notes
 - Install extra deps if not installed yet:

@@ -5,6 +5,7 @@ python-multipart==0.0.9
 python-dotenv==1.0.1
 google-cloud-aiplatform==1.66.0
 PyPDF2==3.0.1
+requests==2.32.3
 # For future GCP integrations (commented for now)
 # google-cloud-speech
 # google-cloud-videointelligence

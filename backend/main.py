@@ -27,8 +27,8 @@ app.add_middleware(
 
 
 class MindmapResponse(BaseModel):
-    nodes: List[dict]
-    edges: List[dict]
+    mindmap_data: dict
+    metadata: dict
 
 
 class ReportResponse(BaseModel):
@@ -50,6 +50,8 @@ class QuizResponse(BaseModel):
 # Vertex AI initialization (optional if library not installed)
 vertex_initialized = False
 gemini_model = None
+# Default to the model from your curl example
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "").strip() or "gemini-2.5-flash-lite"
 
 try:
     import vertexai
@@ -59,7 +61,9 @@ try:
     location = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1").strip() or "us-central1"
     if project_id:
         vertexai.init(project=project_id, location=location)
-        gemini_model = GenerativeModel("gemini-1.5-flash")
+        # Use env-selected model (explicit version recommended). Examples:
+        # gemini-1.5-flash-001, gemini-1.0-pro-001, gemini-2.5-flash-lite
+        gemini_model = GenerativeModel(GEMINI_MODEL)
         vertex_initialized = True
 except Exception:
     vertex_initialized = False
@@ -89,42 +93,102 @@ def _read_text_from_upload(upload: UploadFile) -> str:
 
 
 def _gemini_generate_text(prompt: str) -> str:
-    if not vertex_initialized or gemini_model is None:
+    # Prefer REST path if API key is configured (to exactly match your curl usage)
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key and not vertex_initialized:
         return "Vertex AI chưa được khởi tạo."
     try:
-        resp = gemini_model.generate_content([
-            {"role": "user", "parts": [prompt]}
-        ])
-        return (getattr(resp, "text", None) or "").strip() or "(Không có nội dung)"
+        if not api_key and vertex_initialized and gemini_model is not None:
+            # SDK path (Service Account)
+            resp = gemini_model.generate_content(prompt)
+            return (getattr(resp, "text", None) or "").strip() or "(Không có nội dung)"
+        # REST path using API key and stream endpoint per your example
+        import requests, json
+        model = GEMINI_MODEL
+        url = f"https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:streamGenerateContent?key={api_key}"
+        payload = {
+            "contents": [
+                {"role": "user", "parts": [{"text": prompt}]}
+            ]
+        }
+        with requests.post(url, json=payload, timeout=120, stream=True) as r:
+            r.raise_for_status()
+            collected = []
+            for line in r.iter_lines(decode_unicode=True):
+                if not line:
+                    continue
+                # Responses are often sent as `data: {json}` lines
+                if line.startswith("data:"):
+                    line = line[len("data:"):].strip()
+                try:
+                    obj = json.loads(line)
+                except Exception:
+                    continue
+                # Extract any text parts available
+                candidates = obj.get("candidates") or []
+                if candidates:
+                    parts = ((candidates[0] or {}).get("content") or {}).get("parts") or []
+                    for p in parts:
+                        if isinstance(p, dict) and "text" in p and p["text"]:
+                            collected.append(p["text"])
+            final_text = "".join(collected).strip()
+            return final_text or "(Không có nội dung)"
     except Exception as e:
         return f"Lỗi Vertex AI: {e}"
 
 
 def _gemini_generate_mindmap(text: str) -> MindmapResponse:
     if not text.strip():
-        return MindmapResponse(nodes=[{"id": "root", "label": "Tài liệu rỗng"}], edges=[])
+        return MindmapResponse(
+            mindmap_data={
+                "name": "Tài liệu rỗng",
+                "type": "ROOT",
+                "children": []
+            },
+            metadata={
+                "generated_by": "Vertex AI MindMap Generator",
+                "timestamp": "2025-10-09T04:46:20Z",
+                "version": "1.0"
+            }
+        )
 
     instruction = (
-        "Hãy trích xuất sơ đồ tư duy JSON tối giản từ văn bản. "
-        "Trả về đúng JSON với các trường: nodes (mảng các {id, label}), "
-        "edges (mảng các {from, to, label}). Không thêm giải thích."
+        "Hãy tạo sơ đồ tư duy JSON theo cấu trúc này từ văn bản. "
+        "Trả về đúng JSON với mindmap_data chứa name, type (ROOT/MAIN_BRANCH/SUB_BRANCH), "
+        "color (hex), style (bold/italic), notes, icon (emoji), children (mảng). "
+        "Và metadata chứa generated_by, timestamp, version. Không thêm giải thích."
     )
     user = f"Văn bản nguồn:\n{text[:4000]}\n\nYêu cầu: {instruction}"
     output = _gemini_generate_text(user)
     # Try to parse JSON; fallback to minimal structure
     import json
+    from datetime import datetime
 
     try:
         data = json.loads(output)
-        nodes = data.get("nodes") or []
-        edges = data.get("edges") or []
-        if not nodes:
-            nodes = [{"id": "root", "label": "Chủ đề"}]
-        return MindmapResponse(nodes=nodes, edges=edges)
+        mindmap_data = data.get("mindmap_data") or {
+            "name": "Ý tưởng trung tâm",
+            "type": "ROOT",
+            "children": []
+        }
+        metadata = data.get("metadata") or {
+            "generated_by": "Vertex AI MindMap Generator",
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "version": "1.0"
+        }
+        return MindmapResponse(mindmap_data=mindmap_data, metadata=metadata)
     except Exception:
         return MindmapResponse(
-            nodes=[{"id": "root", "label": "Chủ đề"}],
-            edges=[],
+            mindmap_data={
+                "name": "Ý tưởng trung tâm",
+                "type": "ROOT",
+                "children": []
+            },
+            metadata={
+                "generated_by": "Vertex AI MindMap Generator",
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "version": "1.0"
+            }
         )
 
 def _detect_auth_mode() -> dict:
@@ -212,7 +276,18 @@ async def mindmap(file: UploadFile = File(...)):
     # Extract text and request Gemini to build mindmap JSON
     text = _read_text_from_upload(file)
     if not text:
-        return MindmapResponse(nodes=[{"id": "root", "label": "Không đọc được nội dung"}], edges=[])
+        return MindmapResponse(
+            mindmap_data={
+                "name": "Không đọc được nội dung",
+                "type": "ROOT",
+                "children": []
+            },
+            metadata={
+                "generated_by": "Vertex AI MindMap Generator",
+                "timestamp": "2025-10-09T04:46:20Z",
+                "version": "1.0"
+            }
+        )
     return _gemini_generate_mindmap(text)
 
 
