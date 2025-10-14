@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Settings, PanelLeft, PanelRight, PanelLeftClose, PanelRightClose } from 'lucide-react';
+import { ProfileMenu } from '../common/ProfileMenu';
 
 // This is the original Header component using Tailwind CSS and Framer Motion.
 
@@ -10,14 +11,22 @@ interface HeaderProps {
   isStudioOpen: boolean;
   toggleSources: () => void;
   toggleStudio: () => void;
+  isLoggedIn: boolean;
+  onLogout: () => void;
+  onLoginClick: () => void;
+  onProfileClick: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ 
+export const Header: React.FC<HeaderProps> = ({
   onNavigateHome,
   isSourcesOpen,
   isStudioOpen,
   toggleSources,
-  toggleStudio 
+  toggleStudio,
+  isLoggedIn,
+  onLogout,
+  onLoginClick,
+  onProfileClick
 }) => {
   return (
     <motion.header 
@@ -60,14 +69,38 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <motion.button 
+        <motion.button
           className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
           <Settings size={20} />
         </motion.button>
-        <motion.button 
+
+        {isLoggedIn ? (
+          <ProfileMenu onLogout={onLogout} onProfileClick={onProfileClick} />
+        ) : (
+          <div className="flex items-center gap-2">
+            <motion.button
+              onClick={onLoginClick}
+              className="font-semibold py-2 px-4 rounded-full text-white/80 hover:text-white transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Login
+            </motion.button>
+            <motion.button
+              onClick={onLoginClick}
+              className="bg-white text-gray-900 font-semibold py-2 px-4 rounded-full"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Sign Up
+            </motion.button>
+          </div>
+        )}
+
+        <motion.button
           className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}

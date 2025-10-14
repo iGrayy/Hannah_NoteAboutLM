@@ -1,25 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip } from 'lucide-react';
+import { MessageBubble, Message } from '../common/MessageBubble';
 
 // This is the original ConversationPanel component using Tailwind CSS.
 
 export const ConversationPanel: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState([
-    { id: '1', role: 'assistant', content: 'Hello! How can I help you with your software engineering project today?' },
-    { id: '2', role: 'user', content: 'I need to understand the difference between Agile and Scrum.' },
+  const [messages, setMessages] = useState<Message[]>([
+    { id: '1', sender: 'ai', text: 'Hello! How can I help you with your software engineering project today?' },
+    { id: '2', sender: 'user', text: 'I need to understand the difference between Agile and Scrum.' },
   ]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(scrollToBottom, [messages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      const userMessage = {
+      const userMessage: Message = {
         id: Date.now().toString(),
-        role: 'user' as const,
-        content: newMessage.trim()
+        sender: 'user',
+        text: newMessage.trim()
       };
       setMessages(prev => [...prev, userMessage]);
       setNewMessage('');
+
+      // Simulate assistant response
+      setTimeout(() => {
+        const aiResponse: Message = {
+          id: Date.now().toString(),
+          sender: 'ai',
+          text: 'Agile is a project management philosophy, while Scrum is a specific Agile framework to implement it. Think of Agile as the diet plan and Scrum as one of the recipes.'
+        };
+        setMessages(prev => [...prev, aiResponse]);
+      }, 1500);
     }
   };
 
@@ -28,12 +46,9 @@ export const ConversationPanel: React.FC = () => {
       {/* Message Display Area */}
       <div className="flex-grow overflow-y-auto mb-4 p-4 bg-gray-800 rounded-lg">
         {messages.map(msg => (
-          <div key={msg.id} className={`mb-4 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`p-3 rounded-lg max-w-lg ${msg.role === 'user' ? 'bg-blue-600' : 'bg-gray-700'}`}>
-              <p>{msg.content}</p>
-            </div>
-          </div>
+          <MessageBubble key={msg.id} message={msg} />
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Message Input Area */}

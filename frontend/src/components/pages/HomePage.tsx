@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Zap, BrainCircuit, ShieldCheck } from 'lucide-react';
+import { Zap, BrainCircuit, ShieldCheck } from 'lucide-react';
 import FeatureSection from './FeatureSection';
 import BenefitCard from './BenefitCard';
 import HeroBackground from './HeroBackground';
+import { ProfileMenu } from '../common/ProfileMenu';
 
 // Floating particles component
 const FloatingParticles = () => {
@@ -108,7 +109,12 @@ const GradientOrbs = () => {
 };
 
 interface HomePageProps {
-  onStartBlankConversation: () => void;
+  onLoginClick: () => void;
+  onSignUpClick: () => void;
+  onDefaultActionClick: () => void;
+  isLoggedIn: boolean;
+  onLogout: () => void;
+  onProfileClick: () => void;
 }
 
 // Animation Variants
@@ -125,12 +131,18 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } },
 };
 
-const Navbar: React.FC<{ onStart: () => void }> = ({ onStart }) => (
+const Navbar: React.FC<{
+  onLoginClick: () => void;
+  onSignUpClick: () => void;
+  isLoggedIn: boolean;
+  onLogout: () => void;
+  onProfileClick: () => void;
+}> = ({ onLoginClick, onSignUpClick, isLoggedIn, onLogout, onProfileClick }) => (
   <motion.nav
     initial={{ y: -100 }}
     animate={{ y: 0 }}
     transition={{ type: 'spring', stiffness: 120 }}
-    className="absolute top-0 left-0 right-0 p-4 bg-transparent z-10"
+    className="absolute top-0 left-0 right-0 p-4 bg-transparent z-30"
   >
     <div className="container mx-auto flex justify-between items-center">
       <div className="text-4xl font-bold">
@@ -151,20 +163,35 @@ const Navbar: React.FC<{ onStart: () => void }> = ({ onStart }) => (
           Hannah
         </span>
       </div>
-      <motion.button
-        onClick={onStart}
-        className="bg-white text-gray-900 font-semibold py-2 px-4 rounded-full flex items-center gap-2"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        Get Started
-        <ArrowRight size={16} />
-      </motion.button>
+      <div className="flex items-center gap-4">
+        {isLoggedIn ? (
+          <ProfileMenu onLogout={onLogout} onProfileClick={onProfileClick} />
+        ) : (
+          <>
+            <motion.button
+              onClick={onLoginClick} // This will trigger the auth modal
+              className="font-semibold py-2 px-5 rounded-full text-white/80 hover:text-white transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Login
+            </motion.button>
+            <motion.button
+              onClick={onSignUpClick} // This will also trigger the auth modal
+              className="bg-white text-gray-900 font-semibold py-2 px-5 rounded-full flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Sign Up
+            </motion.button>
+          </>
+        )}
+      </div>
     </div>
   </motion.nav>
 );
 
-const HeroSection: React.FC<{ onStart: () => void }> = ({ onStart }) => (
+const HeroSection: React.FC<{ onActionClick: () => void }> = ({ onActionClick }) => (
   <section className="min-h-screen flex items-center justify-center text-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 animate-gradient-xy">
     <HeroBackground />
     {/* Gradient Overlay to highlight text content */}
@@ -200,7 +227,7 @@ const HeroSection: React.FC<{ onStart: () => void }> = ({ onStart }) => (
         style={{ transform: 'translateZ(50px)' }}
       >
 <motion.button
-  onClick={onStart}
+  onClick={onActionClick}
   className="relative text-lg font-bold py-4 px-10 rounded-full 
              bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 
              text-white shadow-lg 
@@ -223,11 +250,11 @@ const HeroSection: React.FC<{ onStart: () => void }> = ({ onStart }) => (
   </section>
 );
 
-export const HomePage: React.FC<HomePageProps> = ({ onStartBlankConversation }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onSignUpClick, onDefaultActionClick, isLoggedIn, onLogout, onProfileClick }) => {
   return (
     <div className="bg-gray-900 text-white">
-      <Navbar onStart={onStartBlankConversation} />
-      <HeroSection onStart={onStartBlankConversation} />
+      <Navbar onLoginClick={onLoginClick} onSignUpClick={onSignUpClick} isLoggedIn={isLoggedIn} onLogout={onLogout} onProfileClick={onProfileClick} />
+      <HeroSection onActionClick={onDefaultActionClick} />
 
       <div id="features" className="bg-gray-800 py-1">
         <FeatureSection
@@ -325,7 +352,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onStartBlankConversation }) 
             Join thousands of learners who are already using Hannah to unlock their potential and accelerate their research.
           </p>
 <motion.button
-  onClick={onStartBlankConversation}
+  onClick={onDefaultActionClick}
   className="relative text-lg font-bold py-4 px-10 rounded-full 
              bg-gradient-to-r from-white via-gray-100 to-gray-300 
              text-gray-900 shadow-lg
