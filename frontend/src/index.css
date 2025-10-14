@@ -3,45 +3,41 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    font-family: 'Hannah Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-
-  body {
-    @apply bg-gray-900 text-white;
+  :root {
+    --blue-rgb: 59, 130, 246;
+    --purple-rgb: 139, 92, 246;
+    --cyan-rgb: 6, 182, 212;
+    --green-rgb: 34, 197, 94;
   }
 }
 
-@layer components {
-  .notebook-button {
-    @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium;
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+@layer utilities {
+  @keyframes gradient-x {
+    0%, 100% {
+      background-size: 200% 200%;
+      background-position: left center;
+    }
+    50% {
+      background-size: 200% 200%;
+      background-position: right center;
+    }
   }
 
-  .notebook-input {
-    @apply bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
-  }
-
-  .source-item {
-    @apply p-3 hover:bg-gray-800 cursor-pointer border-l-4 border-transparent hover:border-blue-500 transition-all duration-200 rounded-lg;
-  }
-
-  .source-item.active {
-    @apply bg-gray-800 border-blue-500;
-  }
-
-  .studio-card {
-    @apply bg-gray-800 hover:bg-gray-700 p-4 rounded-lg cursor-pointer transition-all duration-200 border border-gray-700;
-  }
-
-  .chat-message {
-    @apply p-4 rounded-lg mb-4;
-  }
-
-  .chat-user {
-    @apply bg-blue-600 text-white ml-12;
-  }
-
-  .chat-ai {
-    @apply bg-gray-800 text-white mr-12;
+  .animate-gradient-x {
+    animation: gradient-x 5s ease infinite;
   }
 }

@@ -51,7 +51,7 @@ class QuizResponse(BaseModel):
 vertex_initialized = False
 gemini_model = None
 # Default to the model from your curl example
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "").strip() or "gemini-2.5-flash-lite"
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "").strip() or "gemini-1.5-flash"
 
 try:
     import vertexai

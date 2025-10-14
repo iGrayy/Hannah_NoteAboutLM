@@ -30,7 +30,7 @@ app.post('/api/ai', async (req, res) => {
 
     // Use Gemini 2.0 Flash with enhanced configuration
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       generationConfig: {
         temperature: 0.7,
         topK: 40,
@@ -59,7 +59,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    model: 'gemini-2.0-flash',
+    model: 'gemini-1.5-flash',
     apiKeyConfigured: !!process.env.GOOGLE_AI_API_KEY
   });
 });
@@ -79,7 +79,7 @@ app.post('/api/test-ai', async (req, res) => {
     res.json({
       success: true,
       response: text,
-      model: 'gemini-2.0-flash',
+      model: 'gemini-1.5-flash',
       timestamp: new Date().toISOString()
     });
   } catch (error) {

@@ -1,0 +1,109 @@
+import React, { useRef, useState } from 'react';
+import { motion, useInView } from 'framer-motion';
+
+interface FeatureSectionProps {
+  title: string;
+  description: string;
+  imageUrl: string;
+  reverse?: boolean;
+}
+
+const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, imageUrl, reverse = false }) => {
+  const ref = useRef<HTMLElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+
+  const textVariants = {
+    hidden: { opacity: 0, x: reverse ? 100 : -100 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: 'easeOut' } },
+  };
+
+  const imageVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: 'easeOut' } },
+  };
+
+  const handleImageMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageRef.current) return;
+
+    const card = imageRef.current;
+    const rect = card.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+
+    const rotateXValue = (mouseY / (rect.height / 2)) * -15;
+    const rotateYValue = (mouseX / (rect.width / 2)) * 15;
+
+    setRotateX(rotateXValue);
+    setRotateY(rotateYValue);
+  };
+
+  const handleImageMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+  };
+
+  return (
+    <section ref={ref} className="min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <div className={`container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center`}>
+        <motion.div
+          variants={textVariants}
+          initial="hidden"
+          animate={isInView ? 'visible' : 'hidden'}
+          className={`text-left ${reverse ? 'md:order-2' : ''}`}>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
+            {title}
+          </h2>
+          <p className="text-lg text-gray-400">
+            {description}
+          </p>
+        </motion.div>
+        <motion.div
+          ref={imageRef}
+          variants={imageVariants}
+          initial="hidden"
+          animate={isInView ? 'visible' : 'hidden'}
+          onMouseMove={handleImageMouseMove}
+          onMouseLeave={handleImageMouseLeave}
+          style={{
+            transformStyle: 'preserve-3d',
+            perspective: '1000px',
+          }}
+          animate={{
+            rotateX,
+            rotateY,
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 300,
+            damping: 30,
+          }}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
+          }}
+          className={`flex justify-center items-center ${reverse ? 'md:order-1' : ''} cursor-pointer`}>
+          <div
+            style={{ transform: 'translateZ(50px)' }}
+            className="relative overflow-hidden rounded-lg"
+          >
+            <img
+              src={imageUrl}
+              alt={title}
+              className="rounded-lg shadow-2xl max-w-sm h-auto transition-transform duration-300"
+            />
+            {/* 3D Overlay Effect */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300" />
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default FeatureSection;
