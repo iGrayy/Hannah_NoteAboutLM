@@ -11,6 +11,7 @@ export const ConversationPanel: React.FC = () => {
     { id: '2', sender: 'user', text: 'I need to understand the difference between Agile and Scrum.' },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const ws = useRef<WebSocket | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -18,26 +19,43 @@ export const ConversationPanel: React.FC = () => {
 
   useEffect(scrollToBottom, [messages]);
 
+  useEffect(() => {
+    // Connect to WebSocket server
+    ws.current = new WebSocket('ws://localhost:8765');
+
+    ws.current.onopen = () => {
+      console.log('WebSocket connected');
+    };
+
+    ws.current.onmessage = (event) => {
+      const receivedMessage = JSON.parse(event.data);
+      setMessages(prev => [...prev, receivedMessage]);
+    };
+
+    ws.current.onclose = () => {
+      console.log('WebSocket disconnected');
+    };
+
+    // Cleanup on component unmount
+    return () => {
+      ws.current?.close();
+    };
+  }, []);
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim()) {
+    if (newMessage.trim() && ws.current?.readyState === WebSocket.OPEN) {
       const userMessage: Message = {
         id: Date.now().toString(),
         sender: 'user',
-        text: newMessage.trim()
+        text: newMessage.trim(),
       };
+      // Send message to WebSocket server
+      ws.current.send(JSON.stringify(userMessage));
+
+      // Add user message to the state to display it immediately
       setMessages(prev => [...prev, userMessage]);
       setNewMessage('');
-
-      // Simulate assistant response
-      setTimeout(() => {
-        const aiResponse: Message = {
-          id: Date.now().toString(),
-          sender: 'ai',
-          text: 'Agile is a project management philosophy, while Scrum is a specific Agile framework to implement it. Think of Agile as the diet plan and Scrum as one of the recipes.'
-        };
-        setMessages(prev => [...prev, aiResponse]);
-      }, 1500);
     }
   };
 

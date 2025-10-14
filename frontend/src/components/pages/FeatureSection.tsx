@@ -1,19 +1,41 @@
 import React, { useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { DocumentAnalysisIcon, ConversationIcon, CreativeStudioIcon } from './AnimatedSVG';
 
 interface FeatureSectionProps {
   title: string;
   description: string;
   imageUrl: string;
   reverse?: boolean;
+  iconType?: 'document' | 'conversation' | 'creative';
 }
 
-const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, imageUrl, reverse = false }) => {
+const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, imageUrl, reverse = false, iconType = 'document' }) => {
+  const getIcon = () => {
+    switch (iconType) {
+      case 'document':
+        return <DocumentAnalysisIcon />;
+      case 'conversation':
+        return <ConversationIcon />;
+      case 'creative':
+        return <CreativeStudioIcon />;
+      default:
+        return <DocumentAnalysisIcon />;
+    }
+  };
   const ref = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const isInView = useInView(ref, { once: false, amount: 0.3 });
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start']
+  });
+
+  const yText = useTransform(scrollYProgress, [0, 1], ['-20%', '20%']);
+  const yImage = useTransform(scrollYProgress, [0, 1], ['20%', '-20%']);
 
   const textVariants = {
     hidden: { opacity: 0, x: reverse ? 100 : -100 },
@@ -52,10 +74,14 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, ima
     <section ref={ref} className="min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className={`container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center`}>
         <motion.div
+          style={{ y: yText }}
           variants={textVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
           className={`text-left ${reverse ? 'md:order-2' : ''}`}>
+          <div className="mb-6 flex justify-start">
+            {getIcon()}
+          </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
             {title}
           </h2>
@@ -65,19 +91,12 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, ima
         </motion.div>
         <motion.div
           ref={imageRef}
+          style={{ y: yImage }}
           variants={imageVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
           onMouseMove={handleImageMouseMove}
           onMouseLeave={handleImageMouseLeave}
-          style={{
-            transformStyle: 'preserve-3d',
-            perspective: '1000px',
-          }}
-          animate={{
-            rotateX,
-            rotateY,
-          }}
           transition={{
             type: 'spring',
             stiffness: 300,
@@ -89,7 +108,10 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, ima
           }}
           className={`flex justify-center items-center ${reverse ? 'md:order-1' : ''} cursor-pointer`}>
           <div
-            style={{ transform: 'translateZ(50px)' }}
+            style={{
+              transform: `translateZ(50px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+              transformStyle: 'preserve-3d'
+            }}
             className="relative overflow-hidden rounded-lg"
           >
             <img

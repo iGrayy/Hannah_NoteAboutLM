@@ -10,9 +10,12 @@ interface BenefitCardProps {
 
 const BenefitCard: React.FC<BenefitCardProps> = ({ icon: Icon, title, description }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
+  const isInView = useInView(ref, { once: false, amount: 0.5 });
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50, scale: 0.9 },
@@ -32,19 +35,27 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ icon: Icon, title, descriptio
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    const mouseX = e.clientX - centerX;
-    const mouseY = e.clientY - centerY;
+    const mouseXVal = e.clientX - centerX;
+    const mouseYVal = e.clientY - centerY;
 
-    const rotateXValue = (mouseY / (rect.height / 2)) * -10;
-    const rotateYValue = (mouseX / (rect.width / 2)) * 10;
+    const rotateXValue = (mouseYVal / (rect.height / 2)) * -10;
+    const rotateYValue = (mouseXVal / (rect.width / 2)) * 10;
 
     setRotateX(rotateXValue);
     setRotateY(rotateYValue);
+
+    setMouseX(e.clientX - rect.left);
+    setMouseY(e.clientY - rect.top);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
   };
 
   const handleMouseLeave = () => {
     setRotateX(0);
     setRotateY(0);
+    setIsHovering(false);
   };
 
   return (
@@ -55,11 +66,10 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ icon: Icon, title, descriptio
       animate={isInView ? 'visible' : 'hidden'}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
       style={{
         transformStyle: 'preserve-3d',
         perspective: '1000px',
-      }}
-      animate={{
         rotateX,
         rotateY,
       }}
@@ -72,25 +82,40 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ icon: Icon, title, descriptio
         scale: 1.05,
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
       }}
-      className="bg-gray-800 p-8 rounded-xl border border-gray-700 text-center cursor-pointer relative overflow-hidden"
+      className="relative p-8 rounded-xl text-center cursor-pointer overflow-hidden backdrop-blur-md bg-white/5 border border-white/10 shadow-2xl"
+      style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+      }}
     >
-      {/* 3D Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl opacity-0 transition-opacity duration-300 hover:opacity-100" />
+      {/* Spotlight effect */}
+      <motion.div
+        className="pointer-events-none absolute -inset-px rounded-xl"
+        style={{
+          opacity: isHovering ? 1 : 0,
+          background: `radial-gradient(400px at ${mouseX}px ${mouseY}px, rgba(59, 130, 246, 0.15), transparent 80%)`,
+        }}
+        transition={{ duration: 0.3 }}
+      />
 
       {/* Content with 3D transform */}
       <div style={{ transform: 'translateZ(50px)' }} className="relative z-10">
         <motion.div
-          className="inline-block p-4 bg-gray-700 rounded-full mb-4"
+          className="inline-block p-4 rounded-full mb-4 backdrop-blur-sm bg-white/10 border border-white/20 shadow-lg"
           whileHover={{
             scale: 1.1,
             rotateY: 360,
           }}
           transition={{ duration: 0.6 }}
+          style={{
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
+          }}
         >
-          <Icon className="text-blue-400" size={32} />
+          <Icon className="text-white drop-shadow-lg" size={32} />
         </motion.div>
-        <h3 className="text-xl font-bold mb-2">{title}</h3>
-        <p className="text-gray-400">{description}</p>
+        <h3 className="text-xl font-bold mb-2 text-white drop-shadow-lg">{title}</h3>
+        <p className="text-gray-200 drop-shadow-md">{description}</p>
       </div>
     </motion.div>
   );
