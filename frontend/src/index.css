@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  @keyframes scroll-x {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+}
+
 @layer base {
   :root {
     --blue-rgb: 59, 130, 246;

@@ -58,8 +58,8 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, ima
     const mouseX = e.clientX - centerX;
     const mouseY = e.clientY - centerY;
 
-    const rotateXValue = (mouseY / (rect.height / 2)) * -15;
-    const rotateYValue = (mouseX / (rect.width / 2)) * 15;
+    const rotateXValue = (mouseY / (rect.height / 2)) * -25;
+    const rotateYValue = (mouseX / (rect.width / 2)) * 25;
 
     setRotateX(rotateXValue);
     setRotateY(rotateYValue);
@@ -103,8 +103,17 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, ima
             damping: 30,
           }}
           whileHover={{
-            scale: 1.05,
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
+            scale: 1.1,
+            boxShadow: '0 35px 70px -12px rgba(0, 0, 0, 0.4)',
+            rotateZ: [0, -2, 2, -1, 1, 0],
+            transition: {
+              rotateZ: {
+                duration: 0.6,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut"
+              }
+            }
           }}
           className={`flex justify-center items-center ${reverse ? 'md:order-1' : ''} cursor-pointer`}>
           <div
@@ -117,7 +126,7 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ title, description, ima
             <img
               src={imageUrl}
               alt={title}
-              className="rounded-lg shadow-2xl max-w-sm h-auto transition-transform duration-300"
+              className="rounded-lg shadow-2xl max-w-lg w-full h-auto transition-all duration-500 hover:shadow-blue-500/20"
             />
             {/* 3D Overlay Effect */}
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300" />

@@ -1,80 +1,91 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Shield, LogOut, Home } from 'lucide-react';
+import { LayoutDashboard, Users, Map, Settings, LogOut, ChevronLeft, ChevronRight, User as UserIcon } from 'lucide-react';
+import AdminOverview from './views/AdminOverview';
+import UserManagement from './views/UserManagement';
+import RoadmapManagement from './views/RoadmapManagement';
+import SystemSettings from './views/SystemSettings';
+
+type View = 'overview' | 'users' | 'roadmap' | 'settings';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [activeView, setActiveView] = useState<View>('overview');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  const handleGoHome = () => {
-    navigate('/');
+  const renderContent = () => {
+    switch (activeView) {
+      case 'overview': return <AdminOverview />;
+      case 'users': return <UserManagement />;
+      case 'roadmap': return <RoadmapManagement />;
+      case 'settings': return <SystemSettings />;
+      default: return <AdminOverview />;
+    }
   };
 
+  const menuItems = [
+    { id: 'overview', label: 'Tổng quan', icon: LayoutDashboard },
+    { id: 'users', label: 'Quản lý người dùng', icon: Users },
+    { id: 'roadmap', label: 'Quản lý Course Roadmap', icon: Map },
+    { id: 'settings', label: 'Cài đặt hệ thống', icon: Settings },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 w-full max-w-2xl text-center">
-        {/* Header */}
-        <div className="flex items-center justify-center mb-8">
-          <Shield className="text-red-400 mr-3" size={48} />
-          <h1 className="text-4xl font-bold text-white">Admin Dashboard</h1>
-        </div>
+    <div className="min-h-screen bg-gray-900 text-gray-200 flex">
+      {/* Sidebar */}
+      <aside className={`bg-gray-800 transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+        <div className="flex flex-col h-full">
+          <div className={`flex items-center justify-between p-4 border-b border-gray-700 ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+            {!isSidebarCollapsed && <h1 className="text-xl font-bold text-white">Admin</h1>}
+            <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-2 rounded-lg hover:bg-gray-700">
+              {isSidebarCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+            </button>
+          </div>
 
-        {/* Welcome Message */}
-        <div className="mb-8">
-          <h2 className="text-2xl text-white mb-4">
-            Chào mừng, {user?.name}!
-          </h2>
-          <p className="text-gray-300 text-lg">
-            Bạn đã đăng nhập với quyền <span className="text-red-400 font-semibold">Quản trị viên</span>
-          </p>
-        </div>
+          <nav className="flex-grow p-2 space-y-2">
+            {menuItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => setActiveView(item.id as View)}
+                className={`w-full flex items-center p-3 rounded-lg transition-colors ${activeView === item.id ? 'bg-red-600 text-white' : 'hover:bg-gray-700'}`}
+              >
+                <item.icon size={20} />
+                {!isSidebarCollapsed && <span className="ml-4 font-medium">{item.label}</span>}
+              </button>
+            ))}
+          </nav>
 
-        {/* Status */}
-        <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-6 mb-8">
-          <h3 className="text-red-400 font-semibold text-xl mb-2">
-            Trang Admin đang phát triển
-          </h3>
-          <p className="text-gray-300">
-            UI dashboard cho Admin sẽ được hoàn thiện sau. 
-            Hiện tại đây là trang placeholder để phân biệt role.
-          </p>
-        </div>
-
-        {/* User Info */}
-        <div className="bg-white/5 rounded-lg p-4 mb-8">
-          <h4 className="text-white font-medium mb-2">Thông tin tài khoản:</h4>
-          <div className="text-gray-300 space-y-1">
-            <p>Email: {user?.email}</p>
-            <p>Role: {user?.role}</p>
-            <p>ID: {user?.id}</p>
+          <div className="p-4 border-t border-gray-700">
+            <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+                <UserIcon size={isSidebarCollapsed ? 24 : 40} className="rounded-full bg-gray-600 p-1" />
+                {!isSidebarCollapsed && (
+                    <div className="ml-3">
+                        <p className="font-semibold text-sm text-white">{user?.name}</p>
+                        <p className="text-xs text-gray-400">{user?.email}</p>
+                    </div>
+                )}
+            </div>
+            <button
+              onClick={handleLogout}
+              className={`w-full flex items-center mt-4 p-3 rounded-lg transition-colors text-red-400 hover:bg-red-500/20 ${isSidebarCollapsed ? 'justify-center' : ''}`}>
+              <LogOut size={20} />
+              {!isSidebarCollapsed && <span className="ml-4 font-medium">Đăng xuất</span>}
+            </button>
           </div>
         </div>
+      </aside>
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            onClick={handleGoHome}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
-          >
-            <Home size={20} />
-            <span>Về trang chủ</span>
-          </button>
-          
-          <button
-            onClick={handleLogout}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
-          >
-            <LogOut size={20} />
-            <span>Đăng xuất</span>
-          </button>
-        </div>
-      </div>
+      {/* Main Content */}
+      <main className="flex-1 p-8 overflow-y-auto">
+        {renderContent()}
+      </main>
     </div>
   );
 };

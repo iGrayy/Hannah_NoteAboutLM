@@ -6,6 +6,7 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import FacultyDashboard from './components/faculty/FacultyDashboard';
 import { AuthModal } from './components/common/AuthModal';
 import { ProfileModal } from './components/common/ProfileModal';
+import BackToTop from './components/ui/BackToTop';
 import { useAuth } from './contexts/AuthContext';
 
 // Protected Route Component
@@ -82,6 +83,9 @@ const App: React.FC = () => {
         onClose={() => setIsProfileModalOpen(false)}
         onLogout={handleLogout}
       />
+
+      {/* Back to Top Button */}
+      <BackToTop />
     </div>
   );
 };
