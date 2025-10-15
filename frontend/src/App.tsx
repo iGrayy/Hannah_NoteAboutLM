@@ -1,36 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { HomePage } from './components/pages/HomePage';
-import { MainPage } from './components/pages/MainPage';
-import { Header } from './components/layout/Header';
+import MainPageWrapper from './components/pages/MainPageWrapper';
+import AdminDashboard from './components/admin/AdminDashboard';
+import FacultyDashboard from './components/faculty/FacultyDashboard';
 import { AuthModal } from './components/common/AuthModal';
 import { ProfileModal } from './components/common/ProfileModal';
+import { useAuth } from './contexts/AuthContext';
 
-
-// This is the original App component that works with the Tailwind CSS components.
+// Protected Route Component
+const ProtectedRoute: React.FC<{ children: React.ReactNode; roles: string[] }> = ({ children, roles }) => {
+  const { user, isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+  if (user && !roles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+};
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'home' | 'main'>('home');
-  const [isSourcesOpen, setIsSourcesOpen] = useState(true);
-  const [isStudioOpen, setIsStudioOpen] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [initialAuthView, setInitialAuthView] = useState<'login' | 'signup'>('login');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
+    const handleLoginSuccess = () => {
     setIsAuthModalOpen(false);
-    // Stay on the current page after login
   };
 
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else if (user.role === 'faculty') {
+        navigate('/faculty');
+      }
+      // Student will stay on the current page after login
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setCurrentPage('home');
+    logout();
+    navigate('/');
   };
 
   const handleAuthAction = (view: 'login' | 'signup' = 'login') => {
-    if (isLoggedIn) {
-      setCurrentPage('main');
+    if (isAuthenticated) {
+      navigate('/main');
     } else {
       setInitialAuthView(view);
       setIsAuthModalOpen(true);
@@ -41,49 +60,28 @@ const App: React.FC = () => {
     setIsProfileModalOpen(true);
   };
 
-  const handleNavigateHome = () => {
-    setCurrentPage('home');
-  };
-
-
-
   return (
     <div className="bg-gray-900 text-white min-h-screen flex flex-col">
-      {currentPage === 'home' ? (
-        <HomePage
-          onLoginClick={() => handleAuthAction('login')}
-          onSignUpClick={() => handleAuthAction('signup')}
-          onDefaultActionClick={() => handleAuthAction()}
-          isLoggedIn={isLoggedIn}
-          onLogout={handleLogout}
-          onProfileClick={handleOpenProfile}
-        />
-      ) : (
-        <div className="flex flex-col h-screen">
-          <Header
-            onNavigateHome={handleNavigateHome}
-            isSourcesOpen={isSourcesOpen}
-            isStudioOpen={isStudioOpen}
-            toggleSources={() => setIsSourcesOpen(prev => !prev)}
-            toggleStudio={() => setIsStudioOpen(prev => !prev)}
-            isLoggedIn={isLoggedIn}
-            onLogout={handleLogout}
-            onLoginClick={() => handleAuthAction('login')}
-            onProfileClick={handleOpenProfile}
-          />
-          <MainPage
-            isSourcesOpen={isSourcesOpen}
-            isStudioOpen={isStudioOpen}
-          />
-        </div>
-      )}
+      <Routes>
+        <Route path="/" element={<HomePage onLoginClick={() => handleAuthAction('login')} onSignUpClick={() => handleAuthAction('signup')} onDefaultActionClick={() => handleAuthAction()} isLoggedIn={isAuthenticated} onLogout={handleLogout} onProfileClick={handleOpenProfile} />} />
+                <Route path="/main" element={<ProtectedRoute roles={['student', 'faculty', 'admin']}><MainPageWrapper /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/faculty" element={<ProtectedRoute roles={['faculty']}><FacultyDashboard /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
         initialView={initialAuthView}
       />
-      <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} onLogout={handleLogout} />
+
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onLogout={handleLogout}
+      />
     </div>
   );
 };

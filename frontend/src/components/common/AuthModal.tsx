@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, User } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -80,65 +81,163 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
 
 
 
-const InputField: React.FC<{ icon: React.ReactNode; type: string; placeholder: string }> = ({ icon, type, placeholder }) => (
-  <div className="relative">
-    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">{icon}</span>
-    <input type={type} placeholder={placeholder} className="w-full p-3 pl-10 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
-  </div>
-);
 
-const LoginForm: React.FC<{ onLoginSuccess: () => void; onSwitch: () => void; }> = ({ onLoginSuccess, onSwitch }) => (
-  <div className="w-full">
-    <h2 className="text-2xl font-bold text-center mb-1">Welcome Back</h2>
-    <p className="text-gray-400 text-center mb-6">Sign in to continue</p>
-    <div className="space-y-4">
-      <InputField icon={<Mail size={16} />} type="email" placeholder="Email" />
-      <InputField icon={<Lock size={16} />} type="password" placeholder="Password" />
-      <div className="pt-2 flex justify-center">
-        <button onClick={onLoginSuccess} className="py-3 px-8 rounded-lg font-semibold 
-               bg-blue-600 text-white 
-               border border-blue-500
-               hover:bg-white hover:text-black hover:border-blue-700
-               transition-all duration-300 shadow-md"
-  >Login</button>
-      </div>
+
+const LoginForm: React.FC<{ onLoginSuccess: () => void; onSwitch: () => void; }> = ({ onLoginSuccess, onSwitch }) => {
+  const { login, isLoading, error } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await login({ email, password });
+      onLoginSuccess();
+    } catch (err) {
+      // Error is handled by AuthContext
+    }
+  };
+
+  return (
+    <div className="w-full">
+      <h2 className="text-2xl font-bold text-center mb-1">Welcome Back</h2>
+      <p className="text-gray-400 text-center mb-6">Sign in to continue</p>
+
+
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <Mail size={16} />
+          </span>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 pl-10 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            required
+          />
+        </div>
+        <div className="relative">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <Lock size={16} />
+          </span>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 pl-10 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            required
+          />
+        </div>
+
+        {error && (
+          <div className="text-red-400 text-sm text-center">{error}</div>
+        )}
+
+        <div className="pt-2 flex justify-center">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="py-3 px-8 rounded-lg font-semibold
+                     bg-blue-600 text-white
+                     border border-blue-500
+                     hover:bg-white hover:text-black hover:border-blue-700
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     transition-all duration-300 shadow-md"
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </div>
+      </form>
+
+      <p className="text-center mt-6 text-sm text-gray-400">
+        Don't have an account? <button onClick={onSwitch} className="font-semibold text-blue-400 hover:underline">Sign Up</button>
+      </p>
     </div>
+  );
+};
 
-    <p className="text-center mt-6 text-sm text-gray-400">
-      Don't have an account? <button onClick={onSwitch} className="font-semibold text-blue-400 hover:underline">Sign Up</button>
-    </p>
-  </div>
-);
+const SignUpForm: React.FC<{ onLoginSuccess: () => void; onSwitch: () => void; }> = ({ onLoginSuccess, onSwitch }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-const SignUpForm: React.FC<{ onLoginSuccess: () => void; onSwitch: () => void; }> = ({ onLoginSuccess, onSwitch }) => (
-<div className="w-full max-w-lg mx-auto">
-  <h2 className="text-2xl font-bold text-center mb-1">Create Account</h2>
-  <p className="text-gray-400 text-center mb-6">Get started with Hannah</p>
-  <div className="space-y-4">
-    <InputField icon={<User size={16} />} type="text" placeholder="Name" />
-    <InputField icon={<Mail size={16} />} type="email" placeholder="Email" />
-    <InputField icon={<Lock size={16} />} type="password" placeholder="Password" />
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // For demo purposes, just call onLoginSuccess
+    // In a real app, you would register the user first
+    onLoginSuccess();
+  };
 
-    <div className="pt-2 flex justify-center">
-      <button
-        onClick={onLoginSuccess}
-        className="py-3 px-8 rounded-lg font-semibold 
-                   bg-blue-600 text-white 
-                   border border-blue-500
-                   hover:bg-white hover:text-black hover:border-blue-700
-                   transition-all duration-300 shadow-md"
-      >
-        Create Account
-      </button>
+  return (
+    <div className="w-full max-w-lg mx-auto">
+      <h2 className="text-2xl font-bold text-center mb-1">Create Account</h2>
+      <p className="text-gray-400 text-center mb-6">Get started with Hannah</p>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <User size={16} />
+          </span>
+          <input
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-3 pl-10 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            required
+          />
+        </div>
+        <div className="relative">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <Mail size={16} />
+          </span>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 pl-10 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            required
+          />
+        </div>
+        <div className="relative">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <Lock size={16} />
+          </span>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 pl-10 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            required
+          />
+        </div>
+
+        <div className="pt-2 flex justify-center">
+          <button
+            type="submit"
+            className="py-3 px-8 rounded-lg font-semibold
+                       bg-blue-600 text-white
+                       border border-blue-500
+                       hover:bg-white hover:text-black hover:border-blue-700
+                       transition-all duration-300 shadow-md"
+          >
+            Create Account
+          </button>
+        </div>
+      </form>
+
+      <p className="text-center mt-6 text-sm text-gray-400">
+        Already have an account?{" "}
+        <button onClick={onSwitch} className="font-semibold text-blue-400 hover:underline">
+          Login
+        </button>
+      </p>
     </div>
-
-    <p className="text-center mt-6 text-sm text-gray-400">
-      Already have an account?{" "}
-      <button onClick={onSwitch} className="font-semibold text-blue-400 hover:underline">
-        Login
-      </button>
-    </p>
-  </div>
-</div>
-
-);
+  );
+};
