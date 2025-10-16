@@ -1,176 +1,29 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
 import {
   Zap,
   BrainCircuit,
   ShieldCheck,
-  Map,
-  Target,
-  Users,
 } from "lucide-react";
 import FeatureSection from "./FeatureSection";
 import BenefitCard from "./BenefitCard";
 import { ProfileMenu } from "../common/ProfileMenu";
 import CrystalNebulaBackground from "./CrystalNebulaBackground";
+import FAQCard from "../common/FAQCard";
+import faqApi from "../../services/faqApi";
 
 interface HomePageProps {
   onLoginClick: () => void;
   onSignUpClick: () => void;
-  onDefaultActionClick: () => void;
-  onNavigateToConversation?: (prompt: string) => void;
+  onDefaultActionClick: (prompt?: string) => void;
   isLoggedIn: boolean;
   onLogout: () => void;
   onProfileClick: () => void;
 }
 
-// Top 3 exploration items for students
-const explorationItems = [
-  {
-    id: 1,
-    title: "Lộ trình học Frontend Development từ Zero đến Hero",
-    description:
-      "Hành trình 6 tháng từ người mới bắt đầu đến Frontend Developer chuyên nghiệp với HTML, CSS, JavaScript, React và các công cụ hiện đại.",
-    icon: Map,
-    color: "from-blue-500 to-cyan-500",
-    prompt:
-      "Tôi muốn học Frontend Development từ đầu. Hãy tạo cho tôi một lộ trình học tập chi tiết 6 tháng bao gồm HTML, CSS, JavaScript, React và các công cụ cần thiết. Bao gồm cả timeline, tài nguyên học tập và dự án thực hành.",
-  },
-  {
-    id: 2,
-    title: "10 Dự án thực tế để xây dựng Portfolio ấn tượng",
-    description:
-      "Danh sách các dự án từ cơ bản đến nâng cao giúp bạn xây dựng portfolio chuyên nghiệp và thu hút nhà tuyển dụng.",
-    icon: Target,
-    color: "from-green-500 to-emerald-500",
-    prompt:
-      "Tôi cần xây dựng portfolio để tìm việc developer. Hãy đề xuất 10 dự án thực tế từ cơ bản đến nâng cao, bao gồm mô tả chi tiết, công nghệ sử dụng, và cách triển khai để tạo portfolio ấn tượng.",
-  },
-  {
-    id: 3,
-    title: "Chinh phục phỏng vấn Technical Interview",
-    description:
-      "Hướng dẫn chi tiết cách chuẩn bị và vượt qua các vòng phỏng vấn kỹ thuật tại các công ty công nghệ hàng đầu.",
-    icon: Users,
-    color: "from-purple-500 to-pink-500",
-    prompt:
-      "Tôi sắp có phỏng vấn technical interview cho vị trí developer. Hãy hướng dẫn tôi cách chuẩn bị toàn diện bao gồm: thuật toán & cấu trúc dữ liệu, system design, behavioral questions, live coding và các tips để thành công.",
-  },
-  {
-    id: 4,
-    title: "Học Machine Learning và AI từ cơ bản",
-    description:
-      "Khám phá thế giới AI với Python, TensorFlow, và PyTorch. Từ Linear Regression đến Deep Learning và Computer Vision.",
-    icon: Map,
-    color: "from-orange-500 to-red-500",
-    prompt:
-      "Tôi muốn học Machine Learning và AI từ đầu. Hãy tạo lộ trình học tập chi tiết bao gồm toán học cơ bản, Python, các thuật toán ML, Deep Learning và các dự án thực hành.",
-  },
-  {
-    id: 5,
-    title: "Xây dựng Personal Brand trên LinkedIn",
-    description:
-      "Chiến lược xây dựng thương hiệu cá nhân chuyên nghiệp: tối ưu profile, content strategy và networking hiệu quả.",
-    icon: Target,
-    color: "from-indigo-500 to-blue-500",
-    prompt:
-      "Tôi muốn xây dựng personal brand mạnh mẽ trên LinkedIn. Hãy hướng dẫn tôi cách tối ưu profile, chiến lược content, networking và tăng influence trong ngành.",
-  },
-  {
-    id: 6,
-    title: "Quản lý tài chính cá nhân thông minh",
-    description:
-      "Hướng dẫn toàn diện về lập ngân sách, tiết kiệm, đầu tư chứng khoán và xây dựng danh mục đầu tư hiệu quả.",
-    icon: Users,
-    color: "from-teal-500 to-green-500",
-    prompt:
-      "Tôi muốn học cách quản lý tài chính cá nhân hiệu quả. Hãy hướng dẫn tôi về lập ngân sách, tiết kiệm, đầu tư chứng khoán, quỹ ETF và xây dựng danh mục đầu tư phù hợp.",
-  },
-  {
-    id: 7,
-    title: "Thành thạo Git & GitHub cho Developer",
-    description:
-      "Hiểu rõ Git, branching, pull request và workflow thực tế để làm việc nhóm hiệu quả trong dự án phần mềm.",
-    icon: Map,
-    color: "from-pink-500 to-rose-500",
-    prompt:
-      "Tôi muốn học Git và GitHub một cách bài bản. Hãy tạo lộ trình bao gồm các lệnh cơ bản, branching strategy, pull request workflow và best practices khi làm việc nhóm.",
-  },
-  {
-    id: 8,
-    title: "Thiết kế UI/UX cơ bản cho Developer",
-    description:
-      "Nguyên tắc thiết kế UI/UX cơ bản, wireframe, prototyping và cách áp dụng vào dự án thực tế.",
-    icon: Target,
-    color: "from-yellow-500 to-orange-500",
-    prompt:
-      "Tôi là developer nhưng muốn học thêm UI/UX để tự thiết kế giao diện. Hãy hướng dẫn tôi các nguyên tắc cơ bản, tool cần dùng, và cách thực hành qua dự án.",
-  },
-  {
-    id: 9,
-    title: "DevOps cơ bản với Docker & CI/CD",
-    description:
-      "Làm quen với Docker, containerization, và thiết lập pipeline CI/CD để triển khai ứng dụng nhanh chóng và an toàn.",
-    icon: Users,
-    color: "from-sky-500 to-indigo-500",
-    prompt:
-      "Tôi muốn học DevOps cơ bản. Hãy tạo lộ trình học về Docker, containerization, CI/CD pipeline với GitHub Actions hoặc GitLab CI, và ví dụ triển khai thực tế.",
-  },
-];
 
-// Exploration Card Component
-const ExplorationCard: React.FC<{
-  item: (typeof explorationItems)[0];
-  index: number;
-  isLoggedIn: boolean;
-  onNavigateToConversation?: (prompt: string) => void;
-  onLoginClick?: () => void;
-}> = ({ item, index, isLoggedIn, onNavigateToConversation, onLoginClick }) => {
-  const IconComponent = item.icon;
 
-  const handleClick = () => {
-    if (isLoggedIn) {
-      if (onNavigateToConversation) {
-        onNavigateToConversation(item.prompt);
-      }
-    } else {
-      if (onLoginClick) {
-        onLoginClick();
-      }
-    }
-  };
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      whileHover={{ y: -8, transition: { duration: 0.2 } }}
-      className="group cursor-pointer"
-      onClick={handleClick}
-    >
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700 hover:border-gray-600 transition-all duration-300 h-full flex flex-col">
-        <div className="flex items-center gap-4 mb-4">
-          <div className={`p-3 rounded-xl bg-gradient-to-r ${item.color}`}>
-            <IconComponent className="w-6 h-6 text-white" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors line-clamp-2">
-              {item.title}
-            </h3>
-          </div>
-        </div>
-        <p className="text-gray-300 text-sm leading-relaxed flex-1">
-          {item.description}
-        </p>
-        <div className="mt-4 pt-4 border-t border-gray-700">
-          <span className="text-xs text-blue-400 font-medium">
-            Click để bắt đầu học →
-          </span>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 const Navbar: React.FC<{
   onLoginClick: () => void;
@@ -292,22 +145,50 @@ export const HomePage: React.FC<HomePageProps> = ({
   onLoginClick,
   onSignUpClick,
   onDefaultActionClick,
-  onNavigateToConversation,
   isLoggedIn,
   onLogout,
   onProfileClick,
 }) => {
-const x = useMotionValue(0);
+  const [faqs, setFaqs] = useState<any[]>([]);
+  const x = useMotionValue(0);
   const isDragging = useRef(false);
+  const dragDistance = useRef(0);
+
+  // Load FAQ data on component mount
+  useEffect(() => {
+    const loadFaqs = async () => {
+      try {
+        const response = await faqApi.getFAQs();
+        if (response.success) {
+          setFaqs(response.data);
+        }
+      } catch (error) {
+        console.error('Error loading FAQs:', error);
+      }
+    };
+    loadFaqs();
+  }, []);
 
   const cardWidth = 400; // width 1 card + gap
-  const totalWidth = cardWidth * explorationItems.length;
+  const totalWidth = cardWidth * faqs.length;
 
   // Clone items 2 lần
-  const infiniteItems = [...explorationItems, ...explorationItems];
+  const infiniteItems = [...faqs, ...faqs];
+
+  // Handle FAQ click with drag detection
+  const handleFAQClick = (faq: any) => {
+    // Only trigger click if not dragging and drag distance is minimal
+    if (!isDragging.current && dragDistance.current < 5) {
+      if (isLoggedIn) {
+        onDefaultActionClick(faq.question);
+      } else {
+        onLoginClick();
+      }
+    }
+  };
 
   useAnimationFrame(() => {
-    if (!isDragging.current) {
+    if (!isDragging.current && faqs.length > 0) {
       const currentX = x.get();
       const newX = currentX - 1; // tốc độ scroll
 
@@ -331,7 +212,7 @@ const x = useMotionValue(0);
       />
 
       <main className="relative z-10">
-        <HeroSection onActionClick={onDefaultActionClick} />
+        <HeroSection onActionClick={() => onDefaultActionClick()} />
 
         <div id="features" className="py-1">
           <FeatureSection
@@ -383,21 +264,31 @@ const x = useMotionValue(0);
           drag="x"
           dragConstraints={{ left: -totalWidth, right: 0 }} // cho kéo trong phạm vi 1 vòng
           dragElastic={0.05}
-          onDragStart={() => { isDragging.current = true }}
-          onDragEnd={() => { isDragging.current = false }}
+          onDragStart={() => {
+            isDragging.current = true;
+            dragDistance.current = 0;
+          }}
+          onDrag={(_, info) => {
+            dragDistance.current = Math.abs(info.offset.x);
+          }}
+          onDragEnd={() => {
+            isDragging.current = false;
+            // Reset drag distance after a short delay to allow click handler to check
+            setTimeout(() => {
+              dragDistance.current = 0;
+            }, 100);
+          }}
         >
-          {infiniteItems.map((item, index) => (
+          {infiniteItems.map((faq, index) => (
             <motion.div
-              key={`${item.id}-${index}`}
+              key={`${faq.id}-${index}`}
               className="flex-shrink-0 w-96"
               whileHover={{ y: -10, transition: { duration: 0.3 } }}
             >
-              <ExplorationCard
-                item={item}
+              <FAQCard
+                faq={faq}
                 index={index}
-                isLoggedIn={isLoggedIn}
-                onNavigateToConversation={onNavigateToConversation}
-                onLoginClick={onLoginClick}
+                onClick={handleFAQClick}
               />
             </motion.div>
           ))}
@@ -454,7 +345,7 @@ const x = useMotionValue(0);
               their potential and accelerate their research.
             </p>
             <motion.button
-              onClick={onDefaultActionClick}
+              onClick={() => onDefaultActionClick()}
               className="relative text-lg font-bold py-4 px-10 rounded-full
                          bg-gradient-to-r from-white via-gray-100 to-gray-300
                          text-gray-900 shadow-lg

@@ -1,15 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Settings, PanelLeft, PanelRight, PanelLeftClose, PanelRightClose } from 'lucide-react';
+import { Settings, Menu, PanelRight, PanelRightClose } from 'lucide-react';
 import { ProfileMenu } from '../common/ProfileMenu';
 
 // This is the original Header component using Tailwind CSS and Framer Motion.
 
 interface HeaderProps {
   onNavigateHome: () => void;
-  isSourcesOpen: boolean;
+  isHistoryOpen: boolean;
   isStudioOpen: boolean;
-  toggleSources: () => void;
+  toggleHistory: () => void;
   toggleStudio: () => void;
   isLoggedIn: boolean;
   onLogout: () => void;
@@ -19,9 +19,9 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   onNavigateHome,
-  isSourcesOpen,
+  isHistoryOpen,
   isStudioOpen,
-  toggleSources,
+  toggleHistory,
   toggleStudio,
   isLoggedIn,
   onLogout,
@@ -36,14 +36,14 @@ export const Header: React.FC<HeaderProps> = ({
       className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 p-3 flex justify-between items-center z-20"
     >
       <div className="flex items-center gap-4">
-        <motion.button 
+        <motion.button
           className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          onClick={toggleSources}
-          title={isSourcesOpen ? "Close Sources Panel" : "Open Sources Panel"}
+          onClick={toggleHistory}
+          title="Lịch sử trò chuyện"
         >
-          {isSourcesOpen ? <PanelLeftClose size={20} /> : <PanelLeft size={20} />}
+          <Menu size={20} />
         </motion.button>
         <div
           className="text-3xl font-bold cursor-pointer"

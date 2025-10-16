@@ -19,6 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "allowJs": true,
 
     /* Path mapping */
     "baseUrl": ".",
@@ -30,7 +31,8 @@
       "@/types/*": ["src/types/*"],
       "@/utils/*": ["src/utils/*"],
       "@/contexts/*": ["src/contexts/*"],
-      "@/styles/*": ["src/styles/*"]
+      "@/styles/*": ["src/styles/*"],
+      "@api/*": ["../src/api/*"]
     }
   },
   "include": ["src"],
