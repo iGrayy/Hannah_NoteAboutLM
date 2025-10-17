@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { LayoutDashboard, BookCopy, MessageSquare, BarChart3, LogOut, ChevronLeft, ChevronRight, User as UserIcon } from 'lucide-react';
-import FacultyOverview from './views/FacultyOverview';
-import ContentManagement from './views/ContentManagement';
-import AIResponseManagement from './views/AIResponseManagement';
-import AnalyticsAndInsights from './views/AnalyticsAndInsights';
+import { LayoutDashboard, BookOpen, MessageCircle, LogOut, ChevronLeft, ChevronRight, User as UserIcon } from 'lucide-react';
+// View Components
+import KnowledgeManagement from './views/KnowledgeManagement';
+import FeedbackManagement from './views/FeedbackManagement';
+import OverviewDashboard from './views/OverviewDashboard';
 
-type View = 'overview' | 'content' | 'response' | 'analytics';
+type View = 'knowledge' | 'feedback' | 'dashboard';
 
 const FacultyDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeView, setActiveView] = useState<View>('overview');
+  const [activeView, setActiveView] = useState<View>('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleLogout = () => {
@@ -22,33 +22,31 @@ const FacultyDashboard: React.FC = () => {
 
   const renderContent = () => {
     switch (activeView) {
-      case 'overview': return <FacultyOverview />;
-      case 'content': return <ContentManagement />;
-      case 'response': return <AIResponseManagement />;
-      case 'analytics': return <AnalyticsAndInsights />;
-      default: return <FacultyOverview />;
+      case 'dashboard': return <OverviewDashboard />;
+      case 'knowledge': return <KnowledgeManagement />;
+      case 'feedback': return <FeedbackManagement />;
+      default: return <OverviewDashboard />;
     }
   };
 
   const menuItems = [
-    { id: 'overview', label: 'Tổng quan', icon: LayoutDashboard },
-    { id: 'content', label: 'Quản lý nội dung', icon: BookCopy },
-    { id: 'response', label: 'Quản lý phản hồi AI', icon: MessageSquare },
-    { id: 'analytics', label: 'Phân tích & Thống kê', icon: BarChart3 },
+    { id: 'dashboard', label: 'Tổng quan', icon: LayoutDashboard },
+    { id: 'knowledge', label: 'Quản lý cơ sở tri thức', icon: BookOpen },
+    { id: 'feedback', label: 'Quản lý phản hồi', icon: MessageCircle },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 flex">
+    <div className="min-h-screen bg-gray-100 text-slate-100 flex">
       {/* Sidebar */}
-      <aside className={`bg-slate-900/90 backdrop-blur-xl border-r border-slate-700/50 shadow-2xl transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-72'}`}>
-        <div className="flex flex-col h-full">
+      <aside className={`bg-slate-900/90 backdrop-blur-xl border-r border-slate-700/50 shadow-2xl transition-all duration-300 fixed h-full z-10 ${isSidebarCollapsed ? 'w-20' : 'w-72'}`}>
+        <div className="flex flex-col h-full overflow-y-auto">
           <div className={`flex items-center justify-between p-6 border-b border-slate-700/50 ${isSidebarCollapsed ? 'justify-center' : ''}`}>
             {!isSidebarCollapsed && (
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                   <UserIcon className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Faculty</h1>
+                <h1 className="text-2xl font-bold">Giảng viên</h1>
               </div>
             )}
             <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-2 rounded-xl hover:bg-slate-700/50 transition-colors">
@@ -90,8 +88,8 @@ const FacultyDashboard: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto bg-gradient-to-br from-slate-50/5 to-slate-100/5">
-        <div className="max-w-7xl mx-auto">
+      <main className={`flex-1 p-3 overflow-y-auto bg-white transition-all duration-300 ${isSidebarCollapsed ? 'ml-20' : 'ml-72'}`}>
+        <div className="max-w-7xl mx-auto text-slate-800">
           {renderContent()}
         </div>
       </main>

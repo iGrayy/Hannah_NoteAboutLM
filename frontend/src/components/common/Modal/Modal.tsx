@@ -20,6 +20,9 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     minWidth: 300,
     maxWidth: '90vw',
     maxHeight: '90vh',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
@@ -34,6 +37,22 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
 const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   padding: theme.spacing(3),
   position: 'relative',
+  overflow: 'auto',
+  flex: 1,
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: theme.palette.grey[100],
+    borderRadius: '4px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: theme.palette.grey[400],
+    borderRadius: '4px',
+    '&:hover': {
+      background: theme.palette.grey[600],
+    },
+  },
 }));
 
 const StyledDialogActions = styled(DialogActions)(({ theme }) => ({

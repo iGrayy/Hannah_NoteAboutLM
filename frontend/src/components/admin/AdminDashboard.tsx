@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { LayoutDashboard, Users, Map, Settings, LogOut, ChevronLeft, ChevronRight, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, Users, Map, Settings, LogOut, ChevronLeft, ChevronRight, User as UserIcon, BookOpen } from 'lucide-react';
 import AdminOverview from './views/AdminOverview';
 import UserManagement from './views/UserManagement';
 import RoadmapManagement from './views/RoadmapManagement';
 import SystemSettings from './views/SystemSettings';
+import KnowledgeManagement from './views/KnowledgeManagement';
 
-type View = 'overview' | 'users' | 'roadmap' | 'settings';
+type View = 'overview' | 'users' | 'roadmap' | 'knowledge' | 'settings';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -25,6 +26,7 @@ const AdminDashboard: React.FC = () => {
       case 'overview': return <AdminOverview />;
       case 'users': return <UserManagement />;
       case 'roadmap': return <RoadmapManagement />;
+      case 'knowledge': return <KnowledgeManagement />;
       case 'settings': return <SystemSettings />;
       default: return <AdminOverview />;
     }
@@ -34,6 +36,7 @@ const AdminDashboard: React.FC = () => {
     { id: 'overview', label: 'Tổng quan', icon: LayoutDashboard },
     { id: 'users', label: 'Quản lý người dùng', icon: Users },
     { id: 'roadmap', label: 'Quản lý Course Roadmap', icon: Map },
+    { id: 'knowledge', label: 'Quản lý kho tri thức', icon: BookOpen },
     { id: 'settings', label: 'Cài đặt hệ thống', icon: Settings },
   ];
 
@@ -83,7 +86,7 @@ const AdminDashboard: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto">
         {renderContent()}
       </main>
     </div>

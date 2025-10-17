@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { HomePage } from './components/pages/HomePage';
 import MainPageWrapper from './components/pages/MainPageWrapper';
-import AdminDashboard from './components/admin/AdminDashboard';
+import AdminPage from './components/AdminPage';
 import FacultyDashboard from './components/faculty/FacultyDashboard';
 import { AuthModal } from './components/common/AuthModal';
 import { ProfileModal } from './components/common/ProfileModal';
@@ -643,7 +643,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<HomePage onLoginClick={() => handleAuthAction('login')} onSignUpClick={() => handleAuthAction('signup')} onDefaultActionClick={(prompt?: string) => handleAuthAction('login', { createNew: true, prompt })} isLoggedIn={isAuthenticated} onLogout={handleLogout} onProfileClick={handleOpenProfile} />} />
                 <Route path="/main" element={<ProtectedRoute roles={['student', 'faculty', 'admin']}><MainPageWrapper conversations={conversations} activeConversationId={activeConversationId} onSelectConversation={handleSelectConversation} onDeleteConversation={handleDeleteConversation} onStartNewConversation={handleStartNewConversation} onSendMessage={handleSendMessage} /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminPage onClose={() => navigate('/')} /></ProtectedRoute>} />
         <Route path="/faculty" element={<ProtectedRoute roles={['faculty']}><FacultyDashboard /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

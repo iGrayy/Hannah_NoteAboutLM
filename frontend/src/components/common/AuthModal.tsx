@@ -33,55 +33,72 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          variants={backdropVariants}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
-          onClick={onClose}
-        >
+        <>
+          <style>{`
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 8px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: rgba(55, 65, 81, 0.3);
+              border-radius: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: rgba(156, 163, 175, 0.5);
+              border-radius: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: rgba(156, 163, 175, 0.8);
+            }
+          `}</style>
           <motion.div
-            variants={modalVariants}
-            exit="exit"
-            className="bg-gray-800/50 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+            variants={backdropVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+            onClick={onClose}
           >
-            <div className="p-8 pb-0">
-              <div className="flex justify-end">
-                <button onClick={onClose} className="p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
-                  <X size={20} />
-                </button>
+            <motion.div
+              variants={modalVariants}
+              exit="exit"
+              className="bg-gray-800/50 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-sm max-h-[90vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-8 pb-0 flex-shrink-0">
+                <div className="flex justify-end">
+                  <button onClick={onClose} className="p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
-            </div>
-<div className={`relative w-full overflow-hidden ${isLoginView ? "min-h-[24rem]" : "min-h-[28rem]"}`}>
-  <AnimatePresence initial={false}>
-    <motion.div
-      key={isLoginView ? 'login' : 'signup'}
-      initial={{ x: isLoginView ? 0 : (initialView === 'login' ? '-100%' : '100%'), opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: isLoginView ? '100%' : '-100%', opacity: 0 }}
-      transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
-      className="absolute inset-0 px-8"
-    >
-      {isLoginView ? (
-        <LoginForm onLoginSuccess={onLoginSuccess} onSwitch={() => setIsLoginView(false)} />
-      ) : (
-        <SignUpForm onLoginSuccess={onLoginSuccess} onSwitch={() => setIsLoginView(true)} />
-      )}
-    </motion.div>
-  </AnimatePresence>
-</div>
+              <div className={`relative w-full overflow-y-auto flex-1 custom-scrollbar ${isLoginView ? "min-h-[24rem]" : "min-h-[28rem]"} max-h-[70vh]`} style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#4B5563 #1F2937'
+              }}>
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={isLoginView ? 'login' : 'signup'}
+                    initial={{ x: isLoginView ? 0 : (initialView === 'login' ? '-100%' : '100%'), opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: isLoginView ? '100%' : '-100%', opacity: 0 }}
+                    transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
+                    className="absolute inset-0 px-8"
+                  >
+                    {isLoginView ? (
+                      <LoginForm onLoginSuccess={onLoginSuccess} onSwitch={() => setIsLoginView(false)} />
+                    ) : (
+                      <SignUpForm onLoginSuccess={onLoginSuccess} onSwitch={() => setIsLoginView(true)} />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
 };
-
-
-
-
 
 const LoginForm: React.FC<{ onLoginSuccess: () => void; onSwitch: () => void; }> = ({ onLoginSuccess, onSwitch }) => {
   const { login, isLoading, error } = useAuth();
@@ -102,8 +119,6 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void; onSwitch: () => void; }>
     <div className="w-full">
       <h2 className="text-2xl font-bold text-center mb-1">Welcome Back</h2>
       <p className="text-gray-400 text-center mb-6">Sign in to continue</p>
-
-
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
@@ -167,8 +182,6 @@ const SignUpForm: React.FC<{ onLoginSuccess: () => void; onSwitch: () => void; }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For demo purposes, just call onLoginSuccess
-    // In a real app, you would register the user first
     onLoginSuccess();
   };
 

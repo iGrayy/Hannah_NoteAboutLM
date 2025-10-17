@@ -1,0 +1,143 @@
+/* Modal Overflow Styles */
+
+/* Custom scrollbar for modals */
+.modal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #9CA3AF #F3F4F6;
+}
+
+.modal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(243, 244, 246, 0.3);
+  border-radius: 4px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.6);
+  border-radius: 4px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.8);
+}
+
+/* Dark theme scrollbar */
+.modal-scrollbar-dark {
+  scrollbar-width: thin;
+  scrollbar-color: #4B5563 #1F2937;
+}
+
+.modal-scrollbar-dark::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scrollbar-dark::-webkit-scrollbar-track {
+  background: rgba(55, 65, 81, 0.3);
+  border-radius: 4px;
+}
+
+.modal-scrollbar-dark::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+
+.modal-scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+/* Modal container styles */
+.modal-container {
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content {
+  overflow-y: auto;
+  flex: 1;
+  max-height: calc(90vh - 120px); /* Account for header/footer */
+}
+
+.modal-header {
+  flex-shrink: 0;
+}
+
+.modal-footer {
+  flex-shrink: 0;
+}
+
+/* Responsive modal sizes */
+@media (max-width: 640px) {
+  .modal-container {
+    max-height: 95vh;
+    margin: 1rem;
+  }
+  
+  .modal-content {
+    max-height: calc(95vh - 100px);
+  }
+}
+
+/* Animation classes for smooth overflow transitions */
+.modal-fade-in {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal-fade-out {
+  animation: modalFadeOut 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+}
+
+/* Utility classes */
+.overflow-modal {
+  overflow: hidden;
+}
+
+.overflow-modal-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.overflow-modal-visible {
+  overflow: visible;
+}
+
+/* Fix for iOS Safari bounce scrolling */
+.modal-content {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Ensure proper z-index layering */
+.modal-backdrop {
+  z-index: 1000;
+}
+
+.modal-dialog {
+  z-index: 1001;
+}
