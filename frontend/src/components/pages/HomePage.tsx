@@ -76,7 +76,7 @@ const Navbar: React.FC<{
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Login
+              Đăng nhập
             </motion.button>
             <motion.button
               onClick={onSignUpClick} // This will also trigger the auth modal
@@ -84,7 +84,7 @@ const Navbar: React.FC<{
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Sign Up
+              Đăng ký
             </motion.button>
           </>
         )}
@@ -110,12 +110,12 @@ const HeroSection: React.FC<{ onActionClick: () => void }> = ({
           textShadow: "0 0 20px rgba(255,255,255,0.5)",
         }}
       >
-        Unlock Your Learning Potential
+        Mở khóa tiềm năng học tập của bạn
       </motion.h1>
       <motion.p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-8">
-        Hannah is your personal AI research assistant, designed to help you
-        analyze documents, generate ideas, and master new topics faster than
-        ever before.
+        Hannah là trợ lý nghiên cứu AI cá nhân của bạn, được thiết kế để giúp bạn
+        phân tích tài liệu, tạo ý tưởng và nắm vững các chủ đề mới nhanh hơn
+        bao giờ hết.
       </motion.p>
       <motion.div>
         <motion.button
@@ -134,7 +134,7 @@ const HeroSection: React.FC<{ onActionClick: () => void }> = ({
               "0 10px 30px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(59, 130, 246, 0.5)",
           }}
         >
-          <span className="relative z-10">Start a Conversation</span>
+          <span className="relative z-10">Bắt đầu cuộc trò chuyện</span>
         </motion.button>
       </motion.div>
     </motion.div>
@@ -216,22 +216,22 @@ export const HomePage: React.FC<HomePageProps> = ({
 
         <div id="features" className="py-1">
           <FeatureSection
-            title="Intelligent Document Analysis"
-            description="Upload your documents, PDFs, or even link to web pages. Hannah's AI will read and understand the content, preparing it for deep analysis and conversation."
+            title="Phân tích tài liệu thông minh"
+            description="Tải lên tài liệu, PDF hoặc thậm chí liên kết đến các trang web. AI của Hannah sẽ đọc và hiểu nội dung, chuẩn bị cho việc phân tích sâu và trò chuyện."
             imageUrl="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
             reverse={false}
             iconType="document"
           />
           <FeatureSection
-            title="Conversational Learning"
-            description="Chat with your documents as if you were talking to an expert. Ask complex questions, get summaries, and find key information in seconds. Learning has never been more interactive."
+            title="Học tập qua trò chuyện"
+            description="Trò chuyện với tài liệu của bạn như thể bạn đang nói chuyện với một chuyên gia. Đặt câu hỏi phức tạp, nhận tóm tắt và tìm thông tin quan trọng trong vài giây. Việc học chưa bao giờ tương tác hơn thế."
             imageUrl="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
             reverse={true}
             iconType="conversation"
           />
           <FeatureSection
-            title="Creative Studio Tools"
-            description="Go beyond simple Q&A. Use the Studio to generate mind maps, create flashcards, build quizzes, and even draft reports based on your source materials. Transform information into knowledge."
+            title="Công cụ Studio sáng tạo"
+            description="Vượt xa việc hỏi đáp đơn giản. Sử dụng Studio để tạo sơ đồ tư duy, tạo thẻ ghi nhớ, xây dựng bài kiểm tra và thậm chí soạn thảo báo cáo dựa trên tài liệu nguồn của bạn. Biến thông tin thành kiến thức."
             imageUrl="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
             reverse={false}
             iconType="creative"
@@ -303,28 +303,28 @@ export const HomePage: React.FC<HomePageProps> = ({
         >
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why Choose Hannah?
+              Tại sao chọn Hannah?
             </h2>
             <p className="text-lg text-gray-400 max-w-3xl mx-auto">
-              Move faster, learn deeper, and unlock new insights with a powerful
-              AI assistant by your side.
+              Di chuyển nhanh hơn, học sâu hơn và mở khóa những hiểu biết mới với
+              trợ lý AI mạnh mẽ bên cạnh bạn.
             </p>
           </div>
           <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <BenefitCard
               icon={Zap}
-              title="Blazing Fast Insights"
-              description="Get answers from your documents in seconds, not hours. Our AI processes information at lightning speed."
+              title="Hiểu biết nhanh như chớp"
+              description="Nhận câu trả lời từ tài liệu của bạn trong vài giây, không phải hàng giờ. AI của chúng tôi xử lý thông tin với tốc độ ánh sáng."
             />
             <BenefitCard
               icon={BrainCircuit}
-              title="Deeper Understanding"
-              description="Go beyond surface-level knowledge. Hannah helps you connect ideas, uncover hidden themes, and truly understand your subject matter."
+              title="Hiểu biết sâu sắc"
+              description="Vượt xa kiến thức bề mặt. Hannah giúp bạn kết nối các ý tưởng, khám phá các chủ đề ẩn và thực sự hiểu rõ chủ đề của mình."
             />
             <BenefitCard
               icon={ShieldCheck}
-              title="Secure & Private"
-              description="Your data is yours alone. All analysis is performed in a secure environment, ensuring your privacy and confidentiality."
+              title="Bảo mật & Riêng tư"
+              description="Dữ liệu của bạn chỉ thuộc về bạn. Tất cả phân tích được thực hiện trong môi trường an toàn, đảm bảo quyền riêng tư và bảo mật của bạn."
             />
           </div>
         </section>
@@ -338,11 +338,11 @@ export const HomePage: React.FC<HomePageProps> = ({
             className="text-center"
           >
             <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Ready to Transform Your Learning?
+              Sẵn sàng thay đổi cách học của bạn?
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-              Join thousands of learners who are already using Hannah to unlock
-              their potential and accelerate their research.
+              Tham gia cùng hàng nghìn học viên đã sử dụng Hannah để mở khóa
+              tiềm năng và tăng tốc nghiên cứu của họ.
             </p>
             <motion.button
               onClick={() => onDefaultActionClick()}
@@ -355,7 +355,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               whileHover={{ scale: 1.1, y: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="relative z-10">Start Your Journey Today</span>
+              <span className="relative z-10">Bắt đầu hành trình của bạn ngay hôm nay</span>
             </motion.button>
           </motion.div>
         </section>

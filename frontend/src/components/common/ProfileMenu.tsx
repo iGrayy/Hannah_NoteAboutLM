@@ -44,11 +44,11 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({ onLogout, onProfileCli
             <ul className="p-2">
               <li onClick={onProfileClick} className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-700 cursor-pointer">
                 <User size={16} />
-                <span>Profile</span>
+                <span>Hồ sơ</span>
               </li>
               <li onClick={onLogout} className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-700 cursor-pointer text-red-400">
                 <LogOut size={16} />
-                <span>Logout</span>
+                <span>Đăng xuất</span>
               </li>
             </ul>
           </motion.div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, LogOut, X, Mail, Shield } from 'lucide-react';
+import { LogOut, X, Mail, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface ProfileModalProps {
@@ -36,7 +36,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onL
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 bg-gray-900/50 border-b border-gray-700 flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Profile</h2>
+                <h2 className="text-xl font-semibold">Hồ sơ</h2>
                 <button onClick={onClose} className="p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
                     <X size={20} />
                 </button>
@@ -59,7 +59,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onL
                     <div className="flex items-center bg-gray-800/70 p-4 rounded-lg">
                         <Shield size={20} className="text-gray-400 mr-4" />
                         <div>
-                            <p className="text-sm text-gray-400">Role</p>
+                            <p className="text-sm text-gray-400">Vai trò</p>
                             <p className="font-semibold capitalize">{user.role}</p>
                         </div>
                     </div>
@@ -69,7 +69,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onL
             <div className="p-6 bg-gray-900/50 border-t border-gray-700">
                 <button onClick={onLogout} className="w-full flex items-center justify-center gap-3 p-3 text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors">
                     <LogOut size={20} />
-                    <span>Logout</span>
+                    <span>Đăng xuất</span>
                 </button>
             </div>
 

@@ -5,17 +5,17 @@ import { Brain, BookOpen, FileText, Lightbulb } from 'lucide-react';
 
 export const StudioPanel: React.FC = () => {
   const [tools] = useState([
-    { id: '1', name: 'Mind Map', icon: Brain, description: 'Create visual mind maps' },
-    { id: '2', name: 'Flashcards', icon: BookOpen, description: 'Generate study flashcards' },
-    { id: '3', name: 'Summary', icon: FileText, description: 'Auto-generate summaries' },
-    { id: '4', name: 'Ideas', icon: Lightbulb, description: 'Brainstorm new ideas' },
+    { id: '1', name: 'Sơ đồ tư duy', icon: Brain, description: 'Tạo sơ đồ tư duy trực quan' },
+    { id: '2', name: 'Thẻ ghi nhớ', icon: BookOpen, description: 'Tạo thẻ ghi nhớ học tập' },
+    { id: '3', name: 'Tóm tắt', icon: FileText, description: 'Tự động tạo tóm tắt' },
+    { id: '4', name: 'Ý tưởng', icon: Lightbulb, description: 'Động não ý tưởng mới' },
   ]);
 
   return (
     <div className="bg-gray-900 text-white h-full flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
-        <h2 className="text-lg font-semibold">Studio</h2>
+        <h2 className="text-lg font-semibold">Xưởng sáng tạo</h2>
       </div>
 
       {/* Tools List */}
